@@ -1,0 +1,94 @@
+services:
+  catalog.api:
+    image: ${DOCKER_REGISTRY-}catalog-api
+    build:
+      context: .
+      dockerfile: Services/Catalog/Catalog.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ConnectionStrings__Database=Server=catalogdb;Port=5432;Database=CatalogDb;User Id=postgres;Password=postgres;Include Error Detail=true
+    depends_on:
+      - catalogdb
+    ports:
+      - "6060:8080"
+
+  basket.api:
+    image: ${DOCKER_REGISTRY-}basket-api
+    build:
+      context: .
+      dockerfile: Services/Basket/Basket.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ConnectionStrings__Database=Server=catalogdb;Port=5432;Database=CatalogDb;User Id=postgres;Password=postgres;Include Error Detail=true
+      - ConnectionStrings__Redis=basketcache:6379
+      - ConnectionStrings__MessageBroker=amqp://guest:guest@messagebroker:5672
+      - GrpcSettings__CatalogUrl=http://catalog.api:8080
+    depends_on:
+      - basketcache
+      - messagebroker
+      - catalog.api
+    ports:
+      - "6061:8080"
+
+  order.api:
+    image: ${DOCKER_REGISTRY-}order-api
+    build:
+      context: .
+      dockerfile: Services/Order/Order.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ConnectionStrings__Database=Server=orderdb;Port=5432;Database=OrderDb;User Id=postgres;Password=postgres;Include Error Detail=true
+      - ConnectionStrings__MessageBroker=amqp://guest:guest@messagebroker:5672
+    depends_on:
+      - orderdb
+      - messagebroker
+    ports:
+      - "6062:8080"
+
+  identity.api:
+    image: ${DOCKER_REGISTRY-}identity-api
+    build:
+      context: .
+      dockerfile: Services/Identity/Identity.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ConnectionStrings__Database=Server=identitydb;Port=5432;Database=IdentityDb;User Id=postgres;Password=postgres;Include Error Detail=true
+    depends_on:
+      - identitydb
+    ports:
+      - "6063:8080"
+
+  gateway.yarp:
+    image: ${DOCKER_REGISTRY-}gateway-yarp
+    build:
+      context: .
+      dockerfile: ApiGateways/Gateway.Yarp/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+    depends_on:
+      - catalog.api
+      - basket.api
+      - order.api
+      - identity.api
+      - payment.api
+    ports:
+      - "6064:8080"
+
+  payment.api:
+    image: ${DOCKER_REGISTRY-}payment-api
+    build:
+      context: .
+      dockerfile: Services/Payment/Payment.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ConnectionStrings__MessageBroker=amqp://guest:guest@messagebroker:5672
+    depends_on:
+      - messagebroker
+    ports:
+      - "6065:8080"
