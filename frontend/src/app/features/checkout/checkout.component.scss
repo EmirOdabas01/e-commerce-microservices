@@ -1,0 +1,42 @@
+h1 {
+  margin-bottom: 24px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+
+  mat-form-field {
+    flex: 1;
+  }
+}
+
+.step-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.review-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.review-total {
+  padding: 16px 0;
+  text-align: right;
+  font-size: 1.2rem;
+}

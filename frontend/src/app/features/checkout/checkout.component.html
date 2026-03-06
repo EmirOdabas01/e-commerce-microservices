@@ -1,0 +1,85 @@
+<h1>Checkout</h1>
+
+<mat-stepper linear #stepper>
+  <mat-step [stepControl]="shippingForm" label="Shipping">
+    <form [formGroup]="shippingForm">
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="firstName">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lastName">
+        </mat-form-field>
+      </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="emailAddress" type="email">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Address</mat-label>
+        <input matInput formControlName="addressLine">
+      </mat-form-field>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Country</mat-label>
+          <input matInput formControlName="country">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>State</mat-label>
+          <input matInput formControlName="state">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Zip Code</mat-label>
+          <input matInput formControlName="zipCode">
+        </mat-form-field>
+      </div>
+      <button mat-raised-button color="primary" matStepperNext [disabled]="shippingForm.invalid">Next</button>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="paymentForm" label="Payment">
+    <form [formGroup]="paymentForm">
+      <mat-form-field appearance="outline">
+        <mat-label>Card Name</mat-label>
+        <input matInput formControlName="cardName">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Card Number</mat-label>
+        <input matInput formControlName="cardNumber">
+      </mat-form-field>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Expiration</mat-label>
+          <input matInput formControlName="expiration" placeholder="MM/YY">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>CVV</mat-label>
+          <input matInput formControlName="cvv">
+        </mat-form-field>
+      </div>
+      <div class="step-actions">
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-raised-button color="primary" matStepperNext [disabled]="paymentForm.invalid">Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step label="Review">
+    <h3>Order Summary</h3>
+    @for (item of items$ | async; track item.productId) {
+      <div class="review-item">
+        <span>{{ item.productName }} x {{ item.quantity }}</span>
+        <span>{{ item.price * item.quantity | currency }}</span>
+      </div>
+    }
+    <div class="review-total">
+      <strong>Total: {{ totalPrice$ | async | currency }}</strong>
+    </div>
+    <div class="step-actions">
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-raised-button color="primary" (click)="placeOrder()" [disabled]="loading$ | async">Place Order</button>
+    </div>
+  </mat-step>
+</mat-stepper>
