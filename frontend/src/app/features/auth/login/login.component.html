@@ -1,0 +1,32 @@
+<div class="auth-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Login</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (error$ | async; as error) {
+        <p class="error">{{ error }}</p>
+      }
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password" type="password">
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || (loading$ | async)">
+          @if (loading$ | async) {
+            Logging in...
+          } @else {
+            Login
+          }
+        </button>
+      </form>
+      <p class="link">Don't have an account? <a routerLink="/auth/register">Register</a></p>
+    </mat-card-content>
+  </mat-card>
+</div>
