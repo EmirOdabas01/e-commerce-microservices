@@ -1,0 +1,27 @@
+<section class="hero">
+  <h1>Welcome to E-Commerce</h1>
+  <p>Discover amazing products at great prices</p>
+  <a mat-raised-button color="primary" routerLink="/catalog">Shop Now</a>
+</section>
+
+<section class="featured">
+  <h2>Featured Products</h2>
+  @if (loading$ | async) {
+    <app-loading-spinner />
+  } @else {
+    <div class="product-grid">
+      @for (product of products$ | async; track product.id) {
+        <mat-card>
+          <img mat-card-image [src]="product.imageFile" [alt]="product.name">
+          <mat-card-header>
+            <mat-card-title>{{ product.name }}</mat-card-title>
+            <mat-card-subtitle>{{ product.price | currency }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-actions>
+            <a mat-button color="primary" [routerLink]="['/product', product.id]">View Details</a>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+</section>
