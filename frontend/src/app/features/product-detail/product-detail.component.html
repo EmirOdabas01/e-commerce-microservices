@@ -1,0 +1,26 @@
+@if (loading$ | async) {
+  <app-loading-spinner />
+} @else if (product$ | async; as product) {
+  <div class="product-detail">
+    <div class="product-image">
+      <img [src]="product.imageFile" [alt]="product.name">
+    </div>
+    <div class="product-info">
+      <h1>{{ product.name }}</h1>
+      <p class="price">{{ product.price | currency }}</p>
+      <p class="description">{{ product.description }}</p>
+      <div class="categories">
+        @for (cat of product.category; track cat) {
+          <mat-chip>{{ cat }}</mat-chip>
+        }
+      </div>
+      <div class="add-to-cart">
+        <mat-form-field appearance="outline" class="quantity-field">
+          <mat-label>Qty</mat-label>
+          <input matInput type="number" [(ngModel)]="quantity" min="1" max="10">
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="addToCart(product)">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+}
