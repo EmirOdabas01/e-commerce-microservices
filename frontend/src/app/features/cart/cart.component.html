@@ -1,0 +1,61 @@
+<h1>Shopping Cart</h1>
+
+@if (loading$ | async) {
+  <app-loading-spinner />
+} @else {
+  @if ((items$ | async)?.length; as count) {
+    <table mat-table [dataSource]="(items$ | async)!">
+      <ng-container matColumnDef="product">
+        <th mat-header-cell *matHeaderCellDef>Product</th>
+        <td mat-cell *matCellDef="let item">{{ item.productName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef>Price</th>
+        <td mat-cell *matCellDef="let item">{{ item.price | currency }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef>Quantity</th>
+        <td mat-cell *matCellDef="let item">
+          <button mat-icon-button (click)="updateQuantity(item, -1)">
+            <mat-icon>remove</mat-icon>
+          </button>
+          {{ item.quantity }}
+          <button mat-icon-button (click)="updateQuantity(item, 1)">
+            <mat-icon>add</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="subtotal">
+        <th mat-header-cell *matHeaderCellDef>Subtotal</th>
+        <td mat-cell *matCellDef="let item">{{ item.price * item.quantity | currency }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let item">
+          <button mat-icon-button color="warn" (click)="removeItem(item.productId)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <div class="cart-footer">
+      <h2>Total: {{ totalPrice$ | async | currency }}</h2>
+      @if (isAuthenticated$ | async) {
+        <a mat-raised-button color="primary" routerLink="/checkout">Proceed to Checkout</a>
+      } @else {
+        <a mat-raised-button color="primary" routerLink="/auth/login">Login to Checkout</a>
+      }
+    </div>
+  } @else {
+    <p>Your cart is empty.</p>
+    <a mat-raised-button color="primary" routerLink="/catalog">Continue Shopping</a>
+  }
+}
