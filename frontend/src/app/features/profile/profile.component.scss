@@ -1,0 +1,22 @@
+h1 {
+  margin-bottom: 24px;
+}
+
+.user-card {
+  max-width: 500px;
+  margin-bottom: 32px;
+
+  .roles {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+  }
+}
+
+h2 {
+  margin-bottom: 16px;
+}
+
+table {
+  width: 100%;
+}
