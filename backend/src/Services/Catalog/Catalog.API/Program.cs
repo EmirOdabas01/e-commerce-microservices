@@ -1,12 +1,14 @@
 using BuildingBlocks.Behaviors;
 using BuildingBlocks.Exceptions;
 using Carter;
+using Catalog.API.GrpcServices;
 using FluentValidation;
 using Marten;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCarter();
+builder.Services.AddGrpc();
 
 builder.Services.AddMediatR(config =>
 {
@@ -29,6 +31,7 @@ var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.MapCarter();
+app.MapGrpcService<CatalogGrpcService>();
 app.MapHealthChecks("/health");
 
 app.Run();
