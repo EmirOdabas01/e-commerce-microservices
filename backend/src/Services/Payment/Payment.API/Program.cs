@@ -1,7 +1,11 @@
 using BuildingBlocks.Exceptions;
 using BuildingBlocks.Messaging;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, config) =>
+    config.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddMessageBroker(builder.Configuration, typeof(Program).Assembly);
 

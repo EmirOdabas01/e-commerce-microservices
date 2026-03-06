@@ -6,8 +6,12 @@ using Microsoft.EntityFrameworkCore;
 using Order.API.Endpoints;
 using Order.Infrastructure;
 using Order.Infrastructure.Data;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, config) =>
+    config.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddMediatR(config =>
 {

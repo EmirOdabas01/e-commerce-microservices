@@ -3,8 +3,12 @@ using Basket.API.Endpoints;
 using Basket.API.GrpcServices;
 using BuildingBlocks.Exceptions;
 using BuildingBlocks.Messaging;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, config) =>
+    config.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 
@@ -16,7 +20,8 @@ builder.Services.AddStackExchangeRedisCache(options =>
 builder.Services.AddGrpcClient<CatalogProtoService.CatalogProtoServiceClient>(options =>
 {
     options.Address = new Uri(builder.Configuration["GrpcSettings:CatalogUrl"]!);
-});
+})
+.AddStandardResilienceHandler();
 
 builder.Services.AddScoped<CatalogGrpcClient>();
 

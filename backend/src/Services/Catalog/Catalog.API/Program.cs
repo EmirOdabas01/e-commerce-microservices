@@ -4,8 +4,12 @@ using Carter;
 using Catalog.API.GrpcServices;
 using FluentValidation;
 using Marten;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, config) =>
+    config.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddCarter();
 builder.Services.AddGrpc();
