@@ -44,6 +44,15 @@ builder.Services.AddRateLimiter(options =>
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("frontend", policy =>
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials());
+});
+
 builder.Services.AddHealthChecks()
     .AddUrlGroup(new Uri(builder.Configuration["ServiceUrls:Catalog"]! + "/health"), name: "catalog-api")
     .AddUrlGroup(new Uri(builder.Configuration["ServiceUrls:Basket"]! + "/health"), name: "basket-api")
@@ -53,6 +62,7 @@ builder.Services.AddHealthChecks()
 
 var app = builder.Build();
 
+app.UseCors("frontend");
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
