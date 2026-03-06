@@ -1,34 +1,40 @@
+using BuildingBlocks.Behaviors;
+using BuildingBlocks.Exceptions;
+using BuildingBlocks.Messaging;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
+using Order.API.Endpoints;
+using Order.Infrastructure;
+using Order.Infrastructure.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddMediatR(config =>
+{
+    config.RegisterServicesFromAssembly(typeof(Order.Application.Commands.CreateOrder.CreateOrderCommand).Assembly);
+    config.AddOpenBehavior(typeof(ValidationBehavior<,>));
+    config.AddOpenBehavior(typeof(LoggingBehavior<,>));
+});
+
+builder.Services.AddValidatorsFromAssembly(typeof(Order.Application.Commands.CreateOrder.CreateOrderCommand).Assembly);
+
+builder.Services.AddInfrastructureServices(builder.Configuration);
+
+builder.Services.AddMessageBroker(builder.Configuration, typeof(Program).Assembly);
+
+builder.Services.AddHealthChecks()
+    .AddNpgSql(builder.Configuration.GetConnectionString("Database")!);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.MapOrderEndpoints();
+app.MapHealthChecks("/health");
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
+using (var scope = app.Services.CreateScope())
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-});
+    var db = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+    await db.Database.MigrateAsync();
+}
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
