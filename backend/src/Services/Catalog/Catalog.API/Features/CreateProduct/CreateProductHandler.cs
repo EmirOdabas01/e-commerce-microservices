@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Catalog.API.Features.CreateProduct;
 
-public record CreateProductCommand(string Name, List<string> Category, string Description, string ImageFile, decimal Price)
+public record CreateProductCommand(string Name, List<string> Category, string Description, string ImageFile, decimal Price, string SellerId)
     : IRequest<CreateProductResult>;
 
 public record CreateProductResult(Guid Id);
@@ -39,7 +39,8 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Create
             Category = command.Category,
             Description = command.Description,
             ImageFile = command.ImageFile,
-            Price = command.Price
+            Price = command.Price,
+            SellerId = command.SellerId
         };
 
         _session.Store(product);

@@ -63,7 +63,9 @@ public static class BasketEndpoints
                 CardNumber = dto.CardNumber,
                 Expiration = dto.Expiration,
                 Cvv = dto.Cvv,
-                PaymentMethod = dto.PaymentMethod
+                PaymentMethod = dto.PaymentMethod,
+                Items = basket.Items.Select(i => new BasketCheckoutItem(
+                    i.ProductId, i.ProductName, i.Price, i.Quantity)).ToList()
             };
 
             await publishEndpoint.Publish(eventMessage);

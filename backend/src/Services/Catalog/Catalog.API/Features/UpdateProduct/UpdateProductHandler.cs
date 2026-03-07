@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Catalog.API.Features.UpdateProduct;
 
-public record UpdateProductCommand(Guid Id, string Name, List<string> Category, string Description, string ImageFile, decimal Price)
+public record UpdateProductCommand(Guid Id, string Name, List<string> Category, string Description, string ImageFile, decimal Price, string SellerId, bool IsAdmin)
     : IRequest<UpdateProductResult>;
 
 public record UpdateProductResult(bool IsSuccess);
@@ -37,6 +37,11 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, Update
         if (product is null)
         {
             throw new NotFoundException(nameof(Product), command.Id);
+        }
+
+        if (!command.IsAdmin && product.SellerId != command.SellerId)
+        {
+            throw new UnauthorizedAccessException("You can only update your own products.");
         }
 
         product.Name = command.Name;

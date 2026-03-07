@@ -13,6 +13,11 @@ public static class AuthEndpoints
 
         group.MapPost("/register", async (RegisterRequest request, UserManager<AppUser> userManager, ITokenService tokenService) =>
         {
+            if (request.Password != request.ConfirmPassword)
+            {
+                return Results.BadRequest(new[] { new { Code = "PasswordMismatch", Description = "Passwords do not match." } });
+            }
+
             var user = new AppUser
             {
                 UserName = request.UserName,
@@ -28,7 +33,8 @@ public static class AuthEndpoints
                 return Results.BadRequest(result.Errors);
             }
 
-            await userManager.AddToRoleAsync(user, "Customer");
+            var role = request.Role is "Customer" or "Seller" ? request.Role : "Customer";
+            await userManager.AddToRoleAsync(user, role);
 
             var roles = await userManager.GetRolesAsync(user);
             var token = tokenService.GenerateAccessToken(user, roles);

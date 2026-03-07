@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Carter;
 using MediatR;
 
@@ -9,14 +10,17 @@ public class DeleteProductEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapDelete("/api/products/{id:guid}", async (Guid id, ISender sender) =>
+        app.MapDelete("/api/products/{id:guid}", async (Guid id, ISender sender, HttpContext context) =>
         {
-            var result = await sender.Send(new DeleteProductCommand(id));
+            var sellerId = context.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var isAdmin = context.User.IsInRole("Admin");
+            var result = await sender.Send(new DeleteProductCommand(id, sellerId, isAdmin));
             return Results.Ok(new DeleteProductResponse(result.IsSuccess));
         })
         .WithName("DeleteProduct")
         .Produces<DeleteProductResponse>()
         .ProducesProblem(StatusCodes.Status404NotFound)
-        .WithSummary("Delete Product");
+        .WithSummary("Delete Product")
+        .RequireAuthorization(p => p.RequireRole("Seller", "Admin"));
     }
 }

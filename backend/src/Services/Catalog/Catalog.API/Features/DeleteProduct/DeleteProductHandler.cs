@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Catalog.API.Features.DeleteProduct;
 
-public record DeleteProductCommand(Guid Id) : IRequest<DeleteProductResult>;
+public record DeleteProductCommand(Guid Id, string SellerId, bool IsAdmin) : IRequest<DeleteProductResult>;
 public record DeleteProductResult(bool IsSuccess);
 
 public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, DeleteProductResult>
@@ -24,6 +24,11 @@ public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, Delete
         if (product is null)
         {
             throw new NotFoundException(nameof(Product), command.Id);
+        }
+
+        if (!command.IsAdmin && product.SellerId != command.SellerId)
+        {
+            throw new UnauthorizedAccessException("You can only delete your own products.");
         }
 
         _session.Delete(product);

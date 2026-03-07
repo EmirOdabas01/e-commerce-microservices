@@ -69,7 +69,7 @@ using (var scope = app.Services.CreateScope())
     await db.Database.MigrateAsync();
 
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    string[] roles = ["Admin", "Customer"];
+    string[] roles = ["Admin", "Customer", "Seller"];
     foreach (var role in roles)
     {
         if (!await roleManager.RoleExistsAsync(role))

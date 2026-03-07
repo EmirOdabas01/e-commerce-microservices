@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { map, exhaustMap, catchError, tap } from 'rxjs/operators';
+import { map, exhaustMap, catchError, tap, delay } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService, CookieService } from '../../core/services';
 import { AuthActions } from './auth.actions';
 
@@ -11,6 +12,7 @@ export class AuthEffects {
   private actions$ = inject(Actions);
   private authService = inject(AuthService);
   private cookieService = inject(CookieService);
+  private snackBar = inject(MatSnackBar);
   private router = inject(Router);
 
   login$ = createEffect(() =>
@@ -70,7 +72,17 @@ export class AuthEffects {
 
   loginRedirect$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(AuthActions.loginSuccess, AuthActions.registerSuccess),
+      ofType(AuthActions.loginSuccess),
+      tap(() => this.router.navigate(['/']))
+    ),
+    { dispatch: false }
+  );
+
+  registerRedirect$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.registerSuccess),
+      tap(() => this.snackBar.open('Registration successful!', '', { duration: 2000 })),
+      delay(2000),
       tap(() => this.router.navigate(['/']))
     ),
     { dispatch: false }

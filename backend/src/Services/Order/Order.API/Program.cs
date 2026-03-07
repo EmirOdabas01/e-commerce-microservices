@@ -16,6 +16,7 @@ builder.Host.UseSerilog((context, config) =>
 builder.Services.AddMediatR(config =>
 {
     config.RegisterServicesFromAssembly(typeof(Order.Application.Commands.CreateOrder.CreateOrderCommand).Assembly);
+    config.RegisterServicesFromAssembly(typeof(Program).Assembly);
     config.AddOpenBehavior(typeof(ValidationBehavior<,>));
     config.AddOpenBehavior(typeof(LoggingBehavior<,>));
 });

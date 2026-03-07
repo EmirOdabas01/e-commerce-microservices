@@ -2,9 +2,10 @@ using MediatR;
 
 namespace Order.Application.Commands.CreateOrder;
 
+public record CreateOrderItem(Guid ProductId, string ProductName, decimal Price, int Quantity);
+
 public record CreateOrderCommand(
     string UserName,
-    decimal TotalPrice,
     string FirstName,
     string LastName,
     string EmailAddress,
@@ -16,6 +17,7 @@ public record CreateOrderCommand(
     string CardNumber,
     string Expiration,
     string Cvv,
-    int PaymentMethod) : IRequest<CreateOrderResult>;
+    int PaymentMethod,
+    List<CreateOrderItem> Items) : IRequest<CreateOrderResult>;
 
 public record CreateOrderResult(Guid Id);

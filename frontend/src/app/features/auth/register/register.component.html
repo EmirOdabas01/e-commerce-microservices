@@ -33,6 +33,22 @@
           <input matInput formControlName="password" type="password">
         </mat-form-field>
 
+        <mat-form-field appearance="outline">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput formControlName="confirmPassword" type="password">
+          @if (form.hasError('passwordMismatch') && form.get('confirmPassword')?.touched) {
+            <mat-error>Passwords do not match</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Account Type</mat-label>
+          <mat-select formControlName="role">
+            <mat-option value="Customer">Customer</mat-option>
+            <mat-option value="Seller">Seller</mat-option>
+          </mat-select>
+        </mat-form-field>
+
         <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || (loading$ | async)">
           @if (loading$ | async) {
             Registering...

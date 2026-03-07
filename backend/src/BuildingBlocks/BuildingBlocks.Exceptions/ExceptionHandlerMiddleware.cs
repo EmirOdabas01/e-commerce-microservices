@@ -49,6 +49,11 @@ public class ExceptionHandlerMiddleware
                 Message = internalServer.Message,
                 Details = internalServer.Details
             }),
+            UnauthorizedAccessException unauthorized => (StatusCodes.Status403Forbidden, new ErrorResponse
+            {
+                StatusCode = StatusCodes.Status403Forbidden,
+                Message = unauthorized.Message
+            }),
             _ => (StatusCodes.Status500InternalServerError, new ErrorResponse
             {
                 StatusCode = StatusCodes.Status500InternalServerError,

@@ -3,8 +3,9 @@ import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { map, mergeMap, catchError, tap, withLatestFrom } from 'rxjs/operators';
+import { map, mergeMap, catchError, tap, withLatestFrom, switchMap } from 'rxjs/operators';
 import { BasketService } from '../../core/services';
+import { AuthActions } from '../auth/auth.actions';
 import { CartActions } from './cart.actions';
 import { selectCartState } from './cart.selectors';
 
@@ -62,5 +63,26 @@ export class CartEffects {
       tap(() => this.router.navigate(['/profile']))
     ),
     { dispatch: false }
+  );
+
+  transferGuestCart$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.loadUserSuccess),
+      withLatestFrom(this.store.select(selectCartState)),
+      switchMap(([{ user }, cartState]) => {
+        if (cartState.userName !== 'guest' || cartState.items.length === 0) {
+          return of(CartActions.loadCart({ userName: user.userName }));
+        }
+        return this.basketService.storeBasket({
+          userName: user.userName,
+          items: cartState.items,
+          totalPrice: cartState.totalPrice
+        }).pipe(
+          switchMap(() => this.basketService.deleteBasket('guest')),
+          map(() => CartActions.loadCart({ userName: user.userName })),
+          catchError(() => of(CartActions.loadCart({ userName: user.userName })))
+        );
+      })
+    )
   );
 }

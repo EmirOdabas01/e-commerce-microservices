@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Carter;
 using Mapster;
 using MediatR;
@@ -11,9 +12,10 @@ public class CreateProductEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/products", async (CreateProductRequest request, ISender sender) =>
+        app.MapPost("/api/products", async (CreateProductRequest request, ISender sender, HttpContext context) =>
         {
-            var command = request.Adapt<CreateProductCommand>();
+            var sellerId = context.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var command = new CreateProductCommand(request.Name, request.Category, request.Description, request.ImageFile, request.Price, sellerId);
             var result = await sender.Send(command);
             var response = result.Adapt<CreateProductResponse>();
             return Results.Created($"/api/products/{response.Id}", response);
@@ -21,6 +23,7 @@ public class CreateProductEndpoint : ICarterModule
         .WithName("CreateProduct")
         .Produces<CreateProductResponse>(StatusCodes.Status201Created)
         .ProducesProblem(StatusCodes.Status400BadRequest)
-        .WithSummary("Create Product");
+        .WithSummary("Create Product")
+        .RequireAuthorization(p => p.RequireRole("Seller", "Admin"));
     }
 }

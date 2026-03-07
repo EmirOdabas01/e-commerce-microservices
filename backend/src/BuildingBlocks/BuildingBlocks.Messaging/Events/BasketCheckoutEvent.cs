@@ -1,5 +1,7 @@
 namespace BuildingBlocks.Messaging.Events;
 
+public record BasketCheckoutItem(Guid ProductId, string ProductName, decimal Price, int Quantity);
+
 public record BasketCheckoutEvent : IntegrationEvent
 {
     public string UserName { get; init; } = default!;
@@ -20,4 +22,6 @@ public record BasketCheckoutEvent : IntegrationEvent
     public string Expiration { get; init; } = default!;
     public string Cvv { get; init; } = default!;
     public int PaymentMethod { get; init; }
+
+    public List<BasketCheckoutItem> Items { get; init; } = [];
 }

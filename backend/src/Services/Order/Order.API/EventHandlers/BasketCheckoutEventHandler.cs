@@ -20,9 +20,12 @@ public class BasketCheckoutEventHandler : IConsumer<BasketCheckoutEvent>
     {
         _logger.LogInformation("Processing basket checkout for user {UserName}", context.Message.UserName);
 
+        var items = context.Message.Items
+            .Select(i => new CreateOrderItem(i.ProductId, i.ProductName, i.Price, i.Quantity))
+            .ToList();
+
         var command = new CreateOrderCommand(
             context.Message.UserName,
-            context.Message.TotalPrice,
             context.Message.FirstName,
             context.Message.LastName,
             context.Message.EmailAddress,
@@ -34,7 +37,8 @@ public class BasketCheckoutEventHandler : IConsumer<BasketCheckoutEvent>
             context.Message.CardNumber,
             context.Message.Expiration,
             context.Message.Cvv,
-            context.Message.PaymentMethod);
+            context.Message.PaymentMethod,
+            items);
 
         var result = await _sender.Send(command);
 
