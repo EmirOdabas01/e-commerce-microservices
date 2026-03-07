@@ -17,6 +17,8 @@ public class GetOrdersHandler : IRequestHandler<GetOrdersQuery, GetOrdersResult>
 
     public async Task<GetOrdersResult> Handle(GetOrdersQuery query, CancellationToken cancellationToken)
     {
+        var totalCount = await _dbContext.Orders.LongCountAsync(cancellationToken);
+
         var orders = await _dbContext.Orders
             .Include(o => o.Items)
             .OrderByDescending(o => o.CreatedAt)
@@ -25,6 +27,6 @@ public class GetOrdersHandler : IRequestHandler<GetOrdersQuery, GetOrdersResult>
             .ToListAsync(cancellationToken);
 
         var orderDtos = orders.Adapt<List<OrderDto>>();
-        return new GetOrdersResult(orderDtos);
+        return new GetOrdersResult(orderDtos, totalCount, query.PageNumber - 1, query.PageSize);
     }
 }

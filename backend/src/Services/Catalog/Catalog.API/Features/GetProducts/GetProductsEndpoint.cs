@@ -4,7 +4,7 @@ using MediatR;
 namespace Catalog.API.Features.GetProducts;
 
 public record GetProductsRequest(int? PageNumber = 1, int? PageSize = 10);
-public record GetProductsResponse(IEnumerable<ProductDto> Products);
+public record GetProductsResponse(IEnumerable<ProductDto> Data, long Count, int PageIndex, int PageSize);
 public record ProductDto(Guid Id, string Name, List<string> Category, string Description, string ImageFile, decimal Price);
 
 public class GetProductsEndpoint : ICarterModule

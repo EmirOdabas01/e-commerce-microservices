@@ -3,13 +3,14 @@ import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { map, exhaustMap, catchError, tap } from 'rxjs/operators';
-import { AuthService } from '../../core/services';
+import { AuthService, CookieService } from '../../core/services';
 import { AuthActions } from './auth.actions';
 
 @Injectable()
 export class AuthEffects {
   private actions$ = inject(Actions);
   private authService = inject(AuthService);
+  private cookieService = inject(CookieService);
   private router = inject(Router);
 
   login$ = createEffect(() =>
@@ -30,7 +31,15 @@ export class AuthEffects {
       exhaustMap(({ request }) =>
         this.authService.register(request).pipe(
           map(response => AuthActions.registerSuccess({ response })),
-          catchError(error => of(AuthActions.registerFailure({ error: error.error?.message || 'Registration failed' })))
+          catchError(error => {
+            let message = 'Registration failed';
+            if (Array.isArray(error.error)) {
+              message = error.error.map((e: any) => e.description).join('. ');
+            } else if (error.error?.message) {
+              message = error.error.message;
+            }
+            return of(AuthActions.registerFailure({ error: message }));
+          })
         )
       )
     )
@@ -40,8 +49,8 @@ export class AuthEffects {
     this.actions$.pipe(
       ofType(AuthActions.loginSuccess, AuthActions.registerSuccess),
       tap(({ response }) => {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('refreshToken', response.refreshToken);
+        this.cookieService.set('token', response.token);
+        this.cookieService.set('refreshToken', response.refreshToken);
       }),
       map(() => AuthActions.loadUser())
     )
@@ -59,9 +68,9 @@ export class AuthEffects {
     )
   );
 
-  loadUserSuccess$ = createEffect(() =>
+  loginRedirect$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(AuthActions.loadUserSuccess),
+      ofType(AuthActions.loginSuccess, AuthActions.registerSuccess),
       tap(() => this.router.navigate(['/']))
     ),
     { dispatch: false }
@@ -71,9 +80,9 @@ export class AuthEffects {
     this.actions$.pipe(
       ofType(AuthActions.logout),
       tap(() => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        this.router.navigate(['/']);
+        this.cookieService.delete('token');
+        this.cookieService.delete('refreshToken');
+        window.location.href = '/';
       })
     ),
     { dispatch: false }

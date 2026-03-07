@@ -11,7 +11,7 @@ export class OrderService {
 
   getOrders(pageIndex = 0, pageSize = 10): Observable<PaginatedResult<OrderDto>> {
     const params = new HttpParams()
-      .set('PageNumber', pageIndex)
+      .set('PageNumber', pageIndex + 1)
       .set('PageSize', pageSize);
     return this.http.get<PaginatedResult<OrderDto>>(this.url, { params });
   }

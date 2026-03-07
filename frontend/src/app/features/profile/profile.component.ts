@@ -7,6 +7,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { selectUser } from '../../store/auth/auth.selectors';
 import { selectAllOrders, selectOrderLoading } from '../../store/order/order.selectors';
 import { OrderActions } from '../../store/order/order.actions';
+import { OrderStatus } from '../../core/models';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { take } from 'rxjs';
 
@@ -23,6 +24,11 @@ export class ProfileComponent implements OnInit {
   orders$ = this.store.select(selectAllOrders);
   loading$ = this.store.select(selectOrderLoading);
   displayedColumns = ['id', 'status', 'totalPrice'];
+  OrderStatus = OrderStatus;
+
+  getStatusLabel(status: OrderStatus): string {
+    return OrderStatus[status] ?? 'Unknown';
+  }
 
   ngOnInit() {
     this.store.select(selectUser).pipe(take(1)).subscribe(user => {

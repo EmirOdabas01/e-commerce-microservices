@@ -7,7 +7,7 @@ using MediatR;
 namespace Catalog.API.Features.GetProducts;
 
 public record GetProductsQuery(int PageNumber = 1, int PageSize = 10) : IRequest<GetProductsResult>;
-public record GetProductsResult(IEnumerable<Product> Products);
+public record GetProductsResult(IEnumerable<Product> Data, long Count, int PageIndex, int PageSize);
 
 public class GetProductsHandler : IRequestHandler<GetProductsQuery, GetProductsResult>
 {
@@ -23,6 +23,6 @@ public class GetProductsHandler : IRequestHandler<GetProductsQuery, GetProductsR
         var products = await _session.Query<Product>()
             .ToPagedListAsync(query.PageNumber, query.PageSize, cancellationToken);
 
-        return new GetProductsResult(products);
+        return new GetProductsResult(products, products.TotalItemCount, query.PageNumber - 1, query.PageSize);
     }
 }

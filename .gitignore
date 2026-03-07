@@ -10,3 +10,4 @@ obj/
 *.swo
 *~
 appsettings.*.local.json
+logs/
