@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { map, mergeMap, catchError } from 'rxjs/operators';
+import { map, mergeMap, catchError, tap } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { OrderService } from '../../core/services';
 import { OrderActions } from './order.actions';
 
@@ -9,6 +10,7 @@ import { OrderActions } from './order.actions';
 export class OrderEffects {
   private actions$ = inject(Actions);
   private orderService = inject(OrderService);
+  private snackBar = inject(MatSnackBar);
 
   loadOrders$ = createEffect(() =>
     this.actions$.pipe(
@@ -31,6 +33,39 @@ export class OrderEffects {
           catchError(error => of(OrderActions.loadUserOrdersFailure({ error: error.message })))
         )
       )
+    )
+  );
+
+  cancelOrder$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(OrderActions.cancelOrder),
+      mergeMap(({ id, userName }) =>
+        this.orderService.cancelOrder(id).pipe(
+          tap(() => this.snackBar.open('Order cancelled.', '', { duration: 2000 })),
+          map(() => OrderActions.cancelOrderSuccess({ id, userName })),
+          catchError(error => of(OrderActions.cancelOrderFailure({ error: error.error?.message || error.message })))
+        )
+      )
+    )
+  );
+
+  refundOrder$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(OrderActions.refundOrder),
+      mergeMap(({ id, userName }) =>
+        this.orderService.refundOrder(id).pipe(
+          tap(() => this.snackBar.open('Refund requested.', '', { duration: 2000 })),
+          map(() => OrderActions.refundOrderSuccess({ id, userName })),
+          catchError(error => of(OrderActions.refundOrderFailure({ error: error.error?.message || error.message })))
+        )
+      )
+    )
+  );
+
+  reloadAfterAction$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(OrderActions.cancelOrderSuccess, OrderActions.refundOrderSuccess),
+      map(({ userName }) => OrderActions.loadUserOrders({ userName }))
     )
   );
 }

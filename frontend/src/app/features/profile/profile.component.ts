@@ -38,7 +38,7 @@ export class ProfileComponent implements OnInit {
   orders$ = this.store.select(selectAllOrders);
   loading$ = this.store.select(selectOrderLoading);
   profileLoading$ = this.store.select(selectAuthLoading);
-  displayedColumns = ['id', 'status', 'totalPrice'];
+  displayedColumns = ['id', 'status', 'totalPrice', 'actions'];
   OrderStatus = OrderStatus;
   editing = false;
 
@@ -76,6 +76,18 @@ export class ProfileComponent implements OnInit {
       }));
       this.editing = false;
     }
+  }
+
+  cancelOrder(id: string) {
+    this.user$.pipe(take(1)).subscribe(user => {
+      if (user) this.store.dispatch(OrderActions.cancelOrder({ id, userName: user.userName }));
+    });
+  }
+
+  refundOrder(id: string) {
+    this.user$.pipe(take(1)).subscribe(user => {
+      if (user) this.store.dispatch(OrderActions.refundOrder({ id, userName: user.userName }));
+    });
   }
 
   ngOnInit() {

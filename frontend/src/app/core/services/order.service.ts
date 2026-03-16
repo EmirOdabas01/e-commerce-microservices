@@ -19,4 +19,12 @@ export class OrderService {
   getOrdersByUser(userName: string): Observable<OrderDto[]> {
     return this.http.get<OrderDto[]>(`${this.url}/user/${userName}`);
   }
+
+  cancelOrder(id: string): Observable<void> {
+    return this.http.put<void>(`${this.url}/${id}/cancel`, {});
+  }
+
+  refundOrder(id: string): Observable<void> {
+    return this.http.put<void>(`${this.url}/${id}/refund`, {});
+  }
 }

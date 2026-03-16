@@ -10,5 +10,11 @@ export const OrderActions = createActionGroup({
     'Load User Orders': props<{ userName: string }>(),
     'Load User Orders Success': props<{ orders: OrderDto[] }>(),
     'Load User Orders Failure': props<{ error: string }>(),
+    'Cancel Order': props<{ id: string; userName: string }>(),
+    'Cancel Order Success': props<{ id: string; userName: string }>(),
+    'Cancel Order Failure': props<{ error: string }>(),
+    'Refund Order': props<{ id: string; userName: string }>(),
+    'Refund Order Success': props<{ id: string; userName: string }>(),
+    'Refund Order Failure': props<{ error: string }>(),
   }
 });
