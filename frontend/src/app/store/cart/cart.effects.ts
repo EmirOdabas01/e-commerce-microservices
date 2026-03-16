@@ -60,7 +60,7 @@ export class CartEffects {
   checkoutSuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(CartActions.checkoutSuccess),
-      tap(() => this.router.navigate(['/profile']))
+      tap(() => this.router.navigate(['/order-confirmation']))
     ),
     { dispatch: false }
   );

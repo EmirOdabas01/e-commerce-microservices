@@ -1,0 +1,35 @@
+.confirmation-container {
+  display: flex;
+  justify-content: center;
+  padding-top: 48px;
+
+  mat-card {
+    max-width: 500px;
+    text-align: center;
+    padding: 32px;
+  }
+
+  .success-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: #4caf50;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: #666;
+    margin-bottom: 8px;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 24px;
+  }
+}
