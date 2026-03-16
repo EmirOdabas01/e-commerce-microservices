@@ -25,9 +25,11 @@ builder.Services.AddMediatR(config =>
     config.AddOpenBehavior(typeof(ValidationBehavior<,>));
     config.AddOpenBehavior(typeof(LoggingBehavior<,>));
     config.AddOpenBehavior(typeof(CachingBehavior<,>));
+    config.AddOpenBehavior(typeof(AuditLoggingBehavior<,>));
 });
 
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddMarten(opts =>
 {

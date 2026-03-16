@@ -19,9 +19,11 @@ builder.Services.AddMediatR(config =>
     config.RegisterServicesFromAssembly(typeof(Program).Assembly);
     config.AddOpenBehavior(typeof(ValidationBehavior<,>));
     config.AddOpenBehavior(typeof(LoggingBehavior<,>));
+    config.AddOpenBehavior(typeof(AuditLoggingBehavior<,>));
 });
 
 builder.Services.AddValidatorsFromAssembly(typeof(Order.Application.Commands.CreateOrder.CreateOrderCommand).Assembly);
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
