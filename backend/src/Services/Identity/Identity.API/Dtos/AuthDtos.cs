@@ -6,3 +6,5 @@ public record RefreshRequest(string RefreshToken);
 public record AuthResponse(string Token, string RefreshToken, DateTime Expiration);
 public record UserResponse(string Id, string Email, string FirstName, string LastName, string UserName, IList<string> Roles);
 public record UpdateProfileRequest(string FirstName, string LastName, string Email);
+public record ForgotPasswordRequest(string Email);
+public record ResetPasswordRequest(string Email, string Token, string NewPassword, string ConfirmPassword);

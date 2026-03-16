@@ -125,5 +125,47 @@ public static class AuthEndpoints
         })
         .WithName("UpdateProfile")
         .RequireAuthorization();
+
+        group.MapPost("/forgot-password", async (ForgotPasswordRequest request, UserManager<AppUser> userManager) =>
+        {
+            var user = await userManager.FindByEmailAsync(request.Email);
+
+            if (user is null)
+            {
+                return Results.Ok(new { Message = "If the email exists, a reset token has been generated." });
+            }
+
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+
+            return Results.Ok(new { Token = token, Message = "Use this token to reset your password." });
+        })
+        .WithName("ForgotPassword")
+        .AllowAnonymous();
+
+        group.MapPost("/reset-password", async (ResetPasswordRequest request, UserManager<AppUser> userManager) =>
+        {
+            if (request.NewPassword != request.ConfirmPassword)
+            {
+                return Results.BadRequest(new { Message = "Passwords do not match." });
+            }
+
+            var user = await userManager.FindByEmailAsync(request.Email);
+
+            if (user is null)
+            {
+                return Results.BadRequest(new { Message = "Invalid request." });
+            }
+
+            var result = await userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                return Results.BadRequest(result.Errors);
+            }
+
+            return Results.Ok(new { Message = "Password has been reset successfully." });
+        })
+        .WithName("ResetPassword")
+        .AllowAnonymous();
     }
 }
