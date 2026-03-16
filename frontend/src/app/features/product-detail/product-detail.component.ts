@@ -14,7 +14,7 @@ import { ProductActions } from '../../store/product/product.actions';
 import { CartActions } from '../../store/cart/cart.actions';
 import { selectSelectedProduct, selectProductLoading } from '../../store/product/product.selectors';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
-import { WishlistService } from '../../core/services';
+import { WishlistService, RecentlyViewedService } from '../../core/services';
 import { selectIsAuthenticated } from '../../store/auth/auth.selectors';
 import { ReviewsComponent } from './reviews/reviews.component';
 
@@ -33,6 +33,7 @@ export class ProductDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private snackBar = inject(MatSnackBar);
   private wishlistService = inject(WishlistService);
+  private recentlyViewedService = inject(RecentlyViewedService);
 
   product$ = this.store.select(selectSelectedProduct);
   isAuthenticated$ = this.store.select(selectIsAuthenticated);
@@ -43,6 +44,9 @@ export class ProductDetailComponent implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.store.dispatch(ProductActions.loadProduct({ id }));
+    this.product$.subscribe(product => {
+      if (product) this.recentlyViewedService.addProduct(product);
+    });
   }
 
   selectImage(index: number) {
