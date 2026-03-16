@@ -63,6 +63,7 @@ app.UseAuthorization();
 app.MapAuthEndpoints();
 app.MapAddressEndpoints();
 app.MapPaymentMethodEndpoints();
+app.MapAdminEndpoints();
 app.MapHealthChecks("/health");
 
 using (var scope = app.Services.CreateScope())
