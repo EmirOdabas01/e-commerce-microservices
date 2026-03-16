@@ -1,3 +1,4 @@
+using Catalog.API.Behaviors;
 using Catalog.API.Models;
 using Marten;
 using Marten.Pagination;
@@ -11,7 +12,10 @@ public record GetProductsQuery(
     decimal? MinPrice = null,
     decimal? MaxPrice = null,
     string? SortBy = null,
-    string? SortOrder = null) : IRequest<GetProductsResult>;
+    string? SortOrder = null) : IRequest<GetProductsResult>, ICacheable
+{
+    public string CacheKey => $"products:{PageNumber}:{PageSize}:{MinPrice}:{MaxPrice}:{SortBy}:{SortOrder}";
+}
 
 public record GetProductsResult(IEnumerable<Product> Data, long Count, int PageIndex, int PageSize);
 
