@@ -65,6 +65,31 @@ export class CartEffects {
     { dispatch: false }
   );
 
+  persistGuestCart$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(CartActions.addToCart, CartActions.removeFromCart, CartActions.updateQuantity),
+      withLatestFrom(this.store.select(selectCartState)),
+      tap(([, state]) => {
+        if (state.userName === 'guest') {
+          localStorage.setItem('guest_cart', JSON.stringify({
+            userName: state.userName,
+            items: state.items,
+            totalPrice: state.totalPrice
+          }));
+        }
+      })
+    ),
+    { dispatch: false }
+  );
+
+  clearGuestCart$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(CartActions.clearCart, CartActions.checkoutSuccess),
+      tap(() => localStorage.removeItem('guest_cart'))
+    ),
+    { dispatch: false }
+  );
+
   transferGuestCart$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.loadUserSuccess),
@@ -79,6 +104,7 @@ export class CartEffects {
           totalPrice: cartState.totalPrice
         }).pipe(
           switchMap(() => this.basketService.deleteBasket('guest')),
+          tap(() => localStorage.removeItem('guest_cart')),
           map(() => CartActions.loadCart({ userName: user.userName })),
           catchError(() => of(CartActions.loadCart({ userName: user.userName })))
         );

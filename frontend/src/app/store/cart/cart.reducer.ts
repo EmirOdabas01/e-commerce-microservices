@@ -10,13 +10,18 @@ export interface CartState {
   error: string | null;
 }
 
-const initialState: CartState = {
-  userName: 'guest',
-  items: [],
-  totalPrice: 0,
-  loading: false,
-  error: null
-};
+function loadGuestCart(): CartState {
+  try {
+    const saved = localStorage.getItem('guest_cart');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return { ...parsed, loading: false, error: null };
+    }
+  } catch { /* ignore */ }
+  return { userName: 'guest', items: [], totalPrice: 0, loading: false, error: null };
+}
+
+const initialState: CartState = loadGuestCart();
 
 function calculateTotal(items: ShoppingCartItem[]): number {
   return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
