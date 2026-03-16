@@ -1,6 +1,11 @@
 <h1>Admin Panel</h1>
 
 <mat-tab-group>
+  <mat-tab label="Dashboard">
+    <div class="tab-content">
+      <app-admin-dashboard />
+    </div>
+  </mat-tab>
   <mat-tab label="Products">
     <div class="tab-content">
       <button mat-raised-button color="primary" (click)="openCreate()">Add Product</button>

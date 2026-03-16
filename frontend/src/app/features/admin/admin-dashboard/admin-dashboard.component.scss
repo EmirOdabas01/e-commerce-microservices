@@ -1,0 +1,28 @@
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 500;
+  color: #3f51b5;
+  margin-top: 8px;
+}
+
+h3 {
+  margin: 24px 0 16px;
+}
+
+.status-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+table {
+  width: 100%;
+}

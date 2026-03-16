@@ -16,6 +16,7 @@ import { Product } from '../../core/models';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { AdminOrdersComponent } from './admin-orders/admin-orders.component';
 import { AdminUsersComponent } from './admin-users/admin-users.component';
+import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 
 @Component({
   selector: 'app-admin',
@@ -23,7 +24,7 @@ import { AdminUsersComponent } from './admin-users/admin-users.component';
     AsyncPipe, CurrencyPipe, ReactiveFormsModule,
     MatTableModule, MatButtonModule, MatIconModule, MatDialogModule,
     MatFormFieldModule, MatInputModule, MatCardModule, MatTabsModule,
-    LoadingSpinnerComponent, AdminOrdersComponent, AdminUsersComponent
+    LoadingSpinnerComponent, AdminOrdersComponent, AdminUsersComponent, AdminDashboardComponent
   ],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'

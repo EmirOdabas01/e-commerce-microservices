@@ -78,5 +78,43 @@ public static class OrderEndpoints
             return Results.Ok(result);
         })
         .WithName("DeleteOrder");
+
+        group.MapGet("/analytics", async (IOrderDbContext dbContext) =>
+        {
+            var orders = await dbContext.Orders.Include(o => o.Items).ToListAsync();
+            var completedOrders = orders.Where(o => o.Status == Order.Domain.Enums.OrderStatus.Completed).ToList();
+
+            var totalOrders = orders.Count;
+            var totalRevenue = completedOrders.Sum(o => o.TotalPrice);
+            var averageOrderValue = completedOrders.Count > 0 ? completedOrders.Average(o => o.TotalPrice) : 0;
+            var pendingOrders = orders.Count(o => o.Status == Order.Domain.Enums.OrderStatus.Pending);
+            var cancelledOrders = orders.Count(o => o.Status == Order.Domain.Enums.OrderStatus.Cancelled);
+
+            var topProducts = orders
+                .SelectMany(o => o.Items)
+                .GroupBy(i => new { i.ProductId, i.ProductName })
+                .Select(g => new { g.Key.ProductId, g.Key.ProductName, TotalQuantity = g.Sum(i => i.Quantity), TotalRevenue = g.Sum(i => i.Price * i.Quantity) })
+                .OrderByDescending(x => x.TotalQuantity)
+                .Take(5)
+                .ToList();
+
+            var statusBreakdown = orders
+                .GroupBy(o => o.Status)
+                .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+                .ToList();
+
+            return Results.Ok(new
+            {
+                TotalOrders = totalOrders,
+                TotalRevenue = totalRevenue,
+                AverageOrderValue = averageOrderValue,
+                PendingOrders = pendingOrders,
+                CancelledOrders = cancelledOrders,
+                TopProducts = topProducts,
+                StatusBreakdown = statusBreakdown
+            });
+        })
+        .WithName("GetOrderAnalytics")
+        .RequireAuthorization(p => p.RequireRole("Admin"));
     }
 }
