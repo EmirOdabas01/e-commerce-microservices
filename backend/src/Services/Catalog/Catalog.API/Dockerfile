@@ -7,6 +7,7 @@ WORKDIR /src
 COPY ["Services/Catalog/Catalog.API/Catalog.API.csproj", "Services/Catalog/Catalog.API/"]
 COPY ["BuildingBlocks/BuildingBlocks.Exceptions/BuildingBlocks.Exceptions.csproj", "BuildingBlocks/BuildingBlocks.Exceptions/"]
 COPY ["BuildingBlocks/BuildingBlocks.Behaviors/BuildingBlocks.Behaviors.csproj", "BuildingBlocks/BuildingBlocks.Behaviors/"]
+COPY ["BuildingBlocks/BuildingBlocks.Messaging/BuildingBlocks.Messaging.csproj", "BuildingBlocks/BuildingBlocks.Messaging/"]
 RUN dotnet restore "Services/Catalog/Catalog.API/Catalog.API.csproj"
 COPY . .
 WORKDIR "/src/Services/Catalog/Catalog.API"

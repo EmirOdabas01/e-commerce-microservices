@@ -6,6 +6,7 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0-preview AS build
 WORKDIR /src
 COPY ["Services/Identity/Identity.API/Identity.API.csproj", "Services/Identity/Identity.API/"]
 COPY ["BuildingBlocks/BuildingBlocks.Exceptions/BuildingBlocks.Exceptions.csproj", "BuildingBlocks/BuildingBlocks.Exceptions/"]
+COPY ["BuildingBlocks/BuildingBlocks.Messaging/BuildingBlocks.Messaging.csproj", "BuildingBlocks/BuildingBlocks.Messaging/"]
 RUN dotnet restore "Services/Identity/Identity.API/Identity.API.csproj"
 COPY . .
 WORKDIR "/src/Services/Identity/Identity.API"

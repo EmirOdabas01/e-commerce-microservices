@@ -60,6 +60,8 @@ services:
       - "6060:8080"
     depends_on:
       - catalogdb
+      - basketcache
+      - messagebroker
 
   identity.api:
     build:
@@ -71,6 +73,7 @@ services:
       - "6063:8080"
     depends_on:
       - identitydb
+      - messagebroker
 
   basket.api:
     build:
@@ -133,6 +136,7 @@ services:
       - order.api
       - identity.api
       - payment.api
+      - notification.api
 
   frontend:
     build:
