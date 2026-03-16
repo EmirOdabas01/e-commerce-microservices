@@ -1,5 +1,6 @@
 using System.Text;
 using BuildingBlocks.Exceptions;
+using BuildingBlocks.Messaging;
 using Identity.API.Data;
 using Identity.API.Endpoints;
 using Identity.API.Models;
@@ -51,6 +52,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddMessageBroker(builder.Configuration, typeof(Program).Assembly);
 
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Database")!);

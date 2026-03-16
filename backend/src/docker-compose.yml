@@ -108,6 +108,17 @@ services:
     depends_on:
       - messagebroker
 
+  notification.api:
+    build:
+      context: .
+      dockerfile: Services/Notification/Notification.API/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+    ports:
+      - "6066:8080"
+    depends_on:
+      - messagebroker
+
   gateway.yarp:
     build:
       context: .

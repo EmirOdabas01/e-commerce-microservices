@@ -27,4 +27,7 @@
   <Folder Name="/src/Services/Payment/">
     <Project Path="src/Services/Payment/Payment.API/Payment.API.csproj" />
   </Folder>
+  <Folder Name="/src/Services/Notification/">
+    <Project Path="src/Services/Notification/Notification.API/Notification.API.csproj" />
+  </Folder>
 </Solution>

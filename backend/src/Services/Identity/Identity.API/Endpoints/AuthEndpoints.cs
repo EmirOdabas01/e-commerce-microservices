@@ -1,6 +1,8 @@
+using BuildingBlocks.Messaging.Events;
 using Identity.API.Dtos;
 using Identity.API.Models;
 using Identity.API.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Identity;
 
 namespace Identity.API.Endpoints;
@@ -142,7 +144,7 @@ public static class AuthEndpoints
         .WithName("Logout")
         .RequireAuthorization();
 
-        group.MapPost("/forgot-password", async (ForgotPasswordRequest request, UserManager<AppUser> userManager) =>
+        group.MapPost("/forgot-password", async (ForgotPasswordRequest request, UserManager<AppUser> userManager, IPublishEndpoint publishEndpoint) =>
         {
             var user = await userManager.FindByEmailAsync(request.Email);
 
@@ -152,6 +154,12 @@ public static class AuthEndpoints
             }
 
             var token = await userManager.GeneratePasswordResetTokenAsync(user);
+
+            await publishEndpoint.Publish(new PasswordResetEvent
+            {
+                Email = request.Email,
+                ResetToken = token
+            });
 
             return Results.Ok(new { Token = token, Message = "Use this token to reset your password." });
         })
