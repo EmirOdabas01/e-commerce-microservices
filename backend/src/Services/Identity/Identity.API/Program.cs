@@ -61,6 +61,7 @@ app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapAuthEndpoints();
+app.MapAddressEndpoints();
 app.MapHealthChecks("/health");
 
 using (var scope = app.Services.CreateScope())

@@ -8,3 +8,6 @@ public record UserResponse(string Id, string Email, string FirstName, string Las
 public record UpdateProfileRequest(string FirstName, string LastName, string Email);
 public record ForgotPasswordRequest(string Email);
 public record ResetPasswordRequest(string Email, string Token, string NewPassword, string ConfirmPassword);
+
+public record AddressRequest(string Label, string FirstName, string LastName, string AddressLine, string Country, string State, string ZipCode, string EmailAddress, bool IsDefault);
+public record AddressResponse(Guid Id, string Label, string FirstName, string LastName, string AddressLine, string Country, string State, string ZipCode, string EmailAddress, bool IsDefault);

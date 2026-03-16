@@ -15,6 +15,7 @@ import { OrderActions } from '../../store/order/order.actions';
 import { AuthActions } from '../../store/auth/auth.actions';
 import { OrderStatus } from '../../core/models';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
+import { AddressManagementComponent } from './address-management/address-management.component';
 import { take } from 'rxjs';
 
 @Component({
@@ -22,7 +23,7 @@ import { take } from 'rxjs';
   imports: [
     AsyncPipe, CurrencyPipe, SlicePipe, ReactiveFormsModule,
     MatCardModule, MatTableModule, MatChipsModule, MatFormFieldModule,
-    MatInputModule, MatButtonModule, MatIconModule, LoadingSpinnerComponent
+    MatInputModule, MatButtonModule, MatIconModule, LoadingSpinnerComponent, AddressManagementComponent
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
