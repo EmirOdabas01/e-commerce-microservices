@@ -30,6 +30,12 @@ public class BasketCheckoutStockHandler : IConsumer<BasketCheckoutEvent>
 
             _logger.LogInformation("Decreased stock for {ProductId} by {Quantity}. New stock: {Stock}",
                 item.ProductId, item.Quantity, product.Stock);
+
+            if (product.Stock <= 5)
+            {
+                _logger.LogWarning("LOW STOCK ALERT: {ProductName} (ID: {ProductId}) has only {Stock} units left",
+                    product.Name, product.Id, product.Stock);
+            }
         }
 
         await _session.SaveChangesAsync();
