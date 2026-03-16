@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { LoginRequest, RegisterRequest, RefreshRequest, AuthResponse, User } from '../models';
+import { LoginRequest, RegisterRequest, RefreshRequest, AuthResponse, User, UpdateProfileRequest } from '../models';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -23,5 +23,9 @@ export class AuthService {
 
   getMe(): Observable<User> {
     return this.http.get<User>(`${this.url}/me`);
+  }
+
+  updateProfile(request: UpdateProfileRequest): Observable<User> {
+    return this.http.put<User>(`${this.url}/profile`, request);
   }
 }

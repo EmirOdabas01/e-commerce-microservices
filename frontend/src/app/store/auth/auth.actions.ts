@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { LoginRequest, RegisterRequest, AuthResponse, User } from '../../core/models';
+import { LoginRequest, RegisterRequest, AuthResponse, User, UpdateProfileRequest } from '../../core/models';
 
 export const AuthActions = createActionGroup({
   source: 'Auth',
@@ -15,5 +15,8 @@ export const AuthActions = createActionGroup({
     'Load User Failure': props<{ error: string }>(),
     'Logout': emptyProps(),
     'Restore Token': props<{ token: string; refreshToken: string }>(),
+    'Update Profile': props<{ request: UpdateProfileRequest }>(),
+    'Update Profile Success': props<{ user: User }>(),
+    'Update Profile Failure': props<{ error: string }>(),
   }
 });

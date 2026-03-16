@@ -5,3 +5,4 @@ public record LoginRequest(string Email, string Password);
 public record RefreshRequest(string RefreshToken);
 public record AuthResponse(string Token, string RefreshToken, DateTime Expiration);
 public record UserResponse(string Id, string Email, string FirstName, string LastName, string UserName, IList<string> Roles);
+public record UpdateProfileRequest(string FirstName, string LastName, string Email);

@@ -92,5 +92,38 @@ public static class AuthEndpoints
         })
         .WithName("GetCurrentUser")
         .RequireAuthorization();
+
+        group.MapPut("/profile", async (UpdateProfileRequest request, HttpContext context, UserManager<AppUser> userManager) =>
+        {
+            var user = await userManager.GetUserAsync(context.User);
+
+            if (user is null)
+            {
+                return Results.Unauthorized();
+            }
+
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            user.Email = request.Email;
+
+            var result = await userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                return Results.BadRequest(result.Errors);
+            }
+
+            var roles = await userManager.GetRolesAsync(user);
+
+            return Results.Ok(new UserResponse(
+                user.Id,
+                user.Email!,
+                user.FirstName,
+                user.LastName,
+                user.UserName!,
+                roles));
+        })
+        .WithName("UpdateProfile")
+        .RequireAuthorization();
     }
 }

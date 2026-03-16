@@ -23,6 +23,12 @@ export interface AuthResponse {
   expiration: string;
 }
 
+export interface UpdateProfileRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
 export interface User {
   id: string;
   firstName: string;

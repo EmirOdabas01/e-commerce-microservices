@@ -88,6 +88,26 @@ export class AuthEffects {
     { dispatch: false }
   );
 
+  updateProfile$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.updateProfile),
+      exhaustMap(({ request }) =>
+        this.authService.updateProfile(request).pipe(
+          map(user => AuthActions.updateProfileSuccess({ user })),
+          catchError(error => of(AuthActions.updateProfileFailure({ error: error.error?.message || 'Update failed' })))
+        )
+      )
+    )
+  );
+
+  updateProfileSuccess$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.updateProfileSuccess),
+      tap(() => this.snackBar.open('Profile updated successfully!', '', { duration: 2000 }))
+    ),
+    { dispatch: false }
+  );
+
   logout$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.logout),
