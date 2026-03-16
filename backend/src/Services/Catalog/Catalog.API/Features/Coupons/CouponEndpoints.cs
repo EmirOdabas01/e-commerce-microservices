@@ -27,6 +27,11 @@ public class CouponEndpoints : ICarterModule
 
         app.MapPost("/api/coupons", async (CouponRequest request, IDocumentSession session) =>
         {
+            var existing = await session.Query<Coupon>()
+                .FirstOrDefaultAsync(c => c.Code == request.Code.ToUpperInvariant());
+            if (existing is not null)
+                return Results.BadRequest(new { Message = "A coupon with this code already exists." });
+
             var coupon = new Coupon
             {
                 Id = Guid.NewGuid(),
@@ -87,8 +92,16 @@ public class CouponEndpoints : ICarterModule
                 discount = coupon.MaxDiscountAmount.Value;
 
             coupon.UsedCount++;
-            session.Update(coupon);
-            await session.SaveChangesAsync();
+            session.Store(coupon);
+
+            try
+            {
+                await session.SaveChangesAsync();
+            }
+            catch (Marten.Exceptions.ConcurrencyException)
+            {
+                return Results.Ok(new ValidateCouponResponse(false, 0, "Coupon is being used by another request. Please try again."));
+            }
 
             return Results.Ok(new ValidateCouponResponse(true, discount, null));
         })

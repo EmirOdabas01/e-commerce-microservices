@@ -41,8 +41,9 @@ export class PaymentMethodsComponent implements OnInit {
   }
 
   loadMethods() {
-    this.paymentMethodService.getPaymentMethods().subscribe(methods => {
-      this.methods = methods;
+    this.paymentMethodService.getPaymentMethods().subscribe({
+      next: methods => this.methods = methods,
+      error: () => this.snackBar.open('Failed to load payment methods.', '', { duration: 3000 })
     });
   }
 
@@ -57,17 +58,23 @@ export class PaymentMethodsComponent implements OnInit {
 
   save() {
     if (this.form.invalid) return;
-    this.paymentMethodService.createPaymentMethod(this.form.getRawValue() as any).subscribe(() => {
-      this.snackBar.open('Payment method added!', '', { duration: 2000 });
-      this.adding = false;
-      this.loadMethods();
+    this.paymentMethodService.createPaymentMethod(this.form.getRawValue() as any).subscribe({
+      next: () => {
+        this.snackBar.open('Payment method added!', '', { duration: 2000 });
+        this.adding = false;
+        this.loadMethods();
+      },
+      error: () => this.snackBar.open('Failed to add payment method.', '', { duration: 3000 })
     });
   }
 
   delete(id: string) {
-    this.paymentMethodService.deletePaymentMethod(id).subscribe(() => {
-      this.snackBar.open('Payment method removed.', '', { duration: 2000 });
-      this.loadMethods();
+    this.paymentMethodService.deletePaymentMethod(id).subscribe({
+      next: () => {
+        this.snackBar.open('Payment method removed.', '', { duration: 2000 });
+        this.loadMethods();
+      },
+      error: () => this.snackBar.open('Failed to delete payment method.', '', { duration: 3000 })
     });
   }
 }

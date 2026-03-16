@@ -14,7 +14,7 @@ import { selectUser } from '../../store/auth/auth.selectors';
 import { AddressService, PaymentMethodService, CouponService } from '../../core/services';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Address, PaymentMethodResponse } from '../../core/models';
-import { take } from 'rxjs';
+import { take, combineLatestWith } from 'rxjs';
 
 export interface ShippingMethod {
   id: string;
@@ -147,28 +147,20 @@ export class CheckoutComponent implements OnInit {
   placeOrder() {
     if (this.shippingForm.invalid || this.paymentForm.invalid) return;
 
-    let userName = 'guest';
-    let customerId = '';
-    let totalPrice = 0;
-
-    this.store.select(selectUser).pipe(take(1)).subscribe(user => {
-      if (user) {
-        userName = user.userName;
-        customerId = user.id;
-      }
+    this.store.select(selectUser).pipe(
+      combineLatestWith(this.store.select(selectCartTotalPrice)),
+      take(1)
+    ).subscribe(([user, cartTotal]) => {
+      this.store.dispatch(CartActions.checkout({
+        checkout: {
+          userName: user?.userName ?? 'guest',
+          customerId: user?.id ?? '',
+          totalPrice: this.getOrderTotal(cartTotal),
+          ...this.shippingForm.getRawValue() as any,
+          ...this.paymentForm.getRawValue() as any,
+          paymentMethod: 1
+        }
+      }));
     });
-
-    this.store.select(selectCartTotalPrice).pipe(take(1)).subscribe(tp => totalPrice = tp);
-
-    this.store.dispatch(CartActions.checkout({
-      checkout: {
-        userName,
-        customerId,
-        totalPrice: this.getOrderTotal(totalPrice),
-        ...this.shippingForm.getRawValue() as any,
-        ...this.paymentForm.getRawValue() as any,
-        paymentMethod: 1
-      }
-    }));
   }
 }

@@ -21,8 +21,8 @@ public class PaymentCompletedNotificationHandler : IConsumer<PaymentCompletedEve
         _logger.LogInformation("Sending payment confirmation for order {OrderId}", message.OrderId);
 
         await _emailService.SendEmailAsync(
-            "customer@example.com",
+            message.EmailAddress,
             $"Payment Confirmed - Order {message.OrderId}",
-            $"Your payment of ${message.Amount:F2} has been processed successfully.\nTransaction ID: {message.TransactionId}");
+            $"Dear {message.CustomerName},\n\nYour payment of ${message.Amount:F2} has been processed successfully.\nTransaction ID: {message.TransactionId}");
     }
 }

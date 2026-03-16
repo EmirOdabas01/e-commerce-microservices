@@ -161,7 +161,7 @@ public static class AuthEndpoints
                 ResetToken = token
             });
 
-            return Results.Ok(new { Token = token, Message = "Use this token to reset your password." });
+            return Results.Ok(new { Message = "If the email exists, a password reset link has been sent." });
         })
         .WithName("ForgotPassword")
         .AllowAnonymous();

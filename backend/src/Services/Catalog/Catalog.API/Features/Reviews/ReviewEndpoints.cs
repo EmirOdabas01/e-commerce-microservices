@@ -40,6 +40,9 @@ public class ReviewEndpoints : ICarterModule
 
         app.MapPost("/api/products/reviews", async (CreateReviewRequest request, HttpContext context, IDocumentSession session) =>
         {
+            if (request.Rating < 1 || request.Rating > 5)
+                return Results.BadRequest(new { Message = "Rating must be between 1 and 5." });
+
             var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             var userName = context.User.FindFirstValue(ClaimTypes.Name)!;
 
@@ -49,7 +52,7 @@ public class ReviewEndpoints : ICarterModule
                 ProductId = request.ProductId,
                 UserId = userId,
                 UserName = userName,
-                Rating = Math.Clamp(request.Rating, 1, 5),
+                Rating = request.Rating,
                 Text = request.Text,
                 CreatedAt = DateTime.UtcNow
             };

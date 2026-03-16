@@ -19,19 +19,27 @@ export class WishlistComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   items: WishlistItem[] = [];
+  loading = false;
 
   ngOnInit() {
     this.loadWishlist();
   }
 
   loadWishlist() {
-    this.wishlistService.getWishlist().subscribe(items => this.items = items);
+    this.loading = true;
+    this.wishlistService.getWishlist().subscribe({
+      next: items => { this.items = items; this.loading = false; },
+      error: () => { this.loading = false; this.snackBar.open('Failed to load wishlist.', '', { duration: 3000 }); }
+    });
   }
 
   remove(productId: string) {
-    this.wishlistService.removeFromWishlist(productId).subscribe(() => {
-      this.snackBar.open('Removed from wishlist.', '', { duration: 2000 });
-      this.loadWishlist();
+    this.wishlistService.removeFromWishlist(productId).subscribe({
+      next: () => {
+        this.snackBar.open('Removed from wishlist.', '', { duration: 2000 });
+        this.loadWishlist();
+      },
+      error: () => this.snackBar.open('Failed to remove item.', '', { duration: 3000 })
     });
   }
 }

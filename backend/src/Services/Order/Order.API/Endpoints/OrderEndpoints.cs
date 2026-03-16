@@ -27,14 +27,16 @@ public static class OrderEndpoints
             var result = await sender.Send(new GetOrdersQuery(pageNumber ?? 1, pageSize ?? 10));
             return Results.Ok(result);
         })
-        .WithName("GetOrders");
+        .WithName("GetOrders")
+        .RequireAuthorization(p => p.RequireRole("Admin"));
 
         group.MapGet("/user/{userName}", async (string userName, ISender sender) =>
         {
             var result = await sender.Send(new GetOrdersByUserQuery(userName));
             return Results.Ok(result);
         })
-        .WithName("GetOrdersByUser");
+        .WithName("GetOrdersByUser")
+        .RequireAuthorization();
 
         group.MapPost("/", async (CreateOrderCommand command, ISender sender) =>
         {
@@ -66,21 +68,24 @@ public static class OrderEndpoints
 
             return Results.Ok(result);
         })
-        .WithName("CancelOrder");
+        .WithName("CancelOrder")
+        .RequireAuthorization();
 
         group.MapPut("/{id:guid}/refund", async (Guid id, ISender sender) =>
         {
             var result = await sender.Send(new RefundOrderCommand(id));
             return Results.Ok(result);
         })
-        .WithName("RefundOrder");
+        .WithName("RefundOrder")
+        .RequireAuthorization();
 
         group.MapDelete("/{id:guid}", async (Guid id, ISender sender) =>
         {
             var result = await sender.Send(new DeleteOrderCommand(id));
             return Results.Ok(result);
         })
-        .WithName("DeleteOrder");
+        .WithName("DeleteOrder")
+        .RequireAuthorization(p => p.RequireRole("Admin"));
 
         group.MapGet("/{id:guid}/invoice", async (Guid id, IOrderDbContext dbContext) =>
         {
@@ -148,7 +153,8 @@ public static class OrderEndpoints
 
             return Results.File(bytes, "application/pdf", $"invoice-{order.Id}.pdf");
         })
-        .WithName("GetOrderInvoice");
+        .WithName("GetOrderInvoice")
+        .RequireAuthorization();
 
         group.MapGet("/analytics", async (IOrderDbContext dbContext) =>
         {

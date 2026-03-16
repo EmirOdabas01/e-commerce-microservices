@@ -38,7 +38,12 @@ export const orderReducer = createReducer(
       loading: false
     })
   ),
-  on(OrderActions.loadOrdersFailure, OrderActions.loadUserOrdersFailure, (state, { error }) => ({
+  on(OrderActions.cancelOrder, OrderActions.refundOrder, (state) => ({
+    ...state,
+    loading: true,
+    error: null
+  })),
+  on(OrderActions.cancelOrderFailure, OrderActions.refundOrderFailure, OrderActions.loadOrdersFailure, OrderActions.loadUserOrdersFailure, (state, { error }) => ({
     ...state,
     loading: false,
     error

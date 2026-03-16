@@ -25,11 +25,11 @@ public class AuditLoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequ
         var isAdmin = user?.IsInRole("Admin") ?? false;
         var requestName = typeof(TRequest).Name;
 
-        if (isAdmin && (requestName.Contains("Create") || requestName.Contains("Update") || requestName.Contains("Delete") || requestName.Contains("Cancel") || requestName.Contains("Refund")))
+        if (requestName.Contains("Create") || requestName.Contains("Update") || requestName.Contains("Delete") || requestName.Contains("Cancel") || requestName.Contains("Refund"))
         {
             _logger.LogInformation(
-                "AUDIT: User {UserId} ({UserName}) executed {RequestName} with {@Request}",
-                userId, userName, requestName, request);
+                "AUDIT: User {UserId} ({UserName}) [Admin={IsAdmin}] executed {RequestName} with {@Request}",
+                userId, userName, isAdmin, requestName, request);
         }
 
         var response = await next(cancellationToken);

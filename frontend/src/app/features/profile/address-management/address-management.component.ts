@@ -46,8 +46,9 @@ export class AddressManagementComponent implements OnInit {
   }
 
   loadAddresses() {
-    this.addressService.getAddresses().subscribe(addresses => {
-      this.addresses = addresses;
+    this.addressService.getAddresses().subscribe({
+      next: addresses => this.addresses = addresses,
+      error: () => this.snackBar.open('Failed to load addresses.', '', { duration: 3000 })
     });
   }
 
@@ -73,25 +74,34 @@ export class AddressManagementComponent implements OnInit {
     const request = this.form.getRawValue() as any;
 
     if (this.editingId) {
-      this.addressService.updateAddress(this.editingId, request).subscribe(() => {
-        this.snackBar.open('Address updated!', '', { duration: 2000 });
-        this.editing = false;
-        this.editingId = null;
-        this.loadAddresses();
+      this.addressService.updateAddress(this.editingId, request).subscribe({
+        next: () => {
+          this.snackBar.open('Address updated!', '', { duration: 2000 });
+          this.editing = false;
+          this.editingId = null;
+          this.loadAddresses();
+        },
+        error: () => this.snackBar.open('Failed to update address.', '', { duration: 3000 })
       });
     } else {
-      this.addressService.createAddress(request).subscribe(() => {
-        this.snackBar.open('Address added!', '', { duration: 2000 });
-        this.editing = false;
-        this.loadAddresses();
+      this.addressService.createAddress(request).subscribe({
+        next: () => {
+          this.snackBar.open('Address added!', '', { duration: 2000 });
+          this.editing = false;
+          this.loadAddresses();
+        },
+        error: () => this.snackBar.open('Failed to add address.', '', { duration: 3000 })
       });
     }
   }
 
   delete(id: string) {
-    this.addressService.deleteAddress(id).subscribe(() => {
-      this.snackBar.open('Address removed.', '', { duration: 2000 });
-      this.loadAddresses();
+    this.addressService.deleteAddress(id).subscribe({
+      next: () => {
+        this.snackBar.open('Address removed.', '', { duration: 2000 });
+        this.loadAddresses();
+      },
+      error: () => this.snackBar.open('Failed to delete address.', '', { duration: 3000 })
     });
   }
 }

@@ -25,23 +25,37 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         var cacheKey = request.CacheKey;
-        var cached = await _cache.GetStringAsync(cacheKey, cancellationToken);
 
-        if (cached is not null)
+        try
         {
-            _logger.LogInformation("Cache hit for {CacheKey}", cacheKey);
-            return JsonSerializer.Deserialize<TResponse>(cached)!;
+            var cached = await _cache.GetStringAsync(cacheKey, cancellationToken);
+
+            if (cached is not null)
+            {
+                _logger.LogInformation("Cache hit for {CacheKey}", cacheKey);
+                return JsonSerializer.Deserialize<TResponse>(cached)!;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Redis cache read failed for {CacheKey}, falling through to handler", cacheKey);
         }
 
-        _logger.LogInformation("Cache miss for {CacheKey}", cacheKey);
         var response = await next(cancellationToken);
 
-        var options = new DistributedCacheEntryOptions
+        try
         {
-            AbsoluteExpirationRelativeToNow = request.CacheDuration
-        };
+            var options = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = request.CacheDuration
+            };
 
-        await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(response), options, cancellationToken);
+            await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(response), options, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Redis cache write failed for {CacheKey}", cacheKey);
+        }
 
         return response;
     }

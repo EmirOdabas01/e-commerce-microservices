@@ -21,7 +21,6 @@ export class ForgotPasswordComponent {
 
   loading = false;
   submitted = false;
-  resetToken: string | null = null;
 
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]]
@@ -31,11 +30,10 @@ export class ForgotPasswordComponent {
     if (this.form.valid) {
       this.loading = true;
       this.authService.forgotPassword(this.form.getRawValue() as any).subscribe({
-        next: (response) => {
+        next: () => {
           this.loading = false;
           this.submitted = true;
-          this.resetToken = response.token;
-          this.snackBar.open('Reset token generated!', '', { duration: 3000 });
+          this.snackBar.open('If the email exists, a reset link has been sent.', '', { duration: 3000 });
         },
         error: () => {
           this.loading = false;

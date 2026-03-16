@@ -28,7 +28,9 @@ public class OrderCreatedEventHandler : IConsumer<OrderCreatedEvent>
             {
                 OrderId = context.Message.OrderId,
                 Amount = context.Message.TotalPrice,
-                TransactionId = Guid.NewGuid().ToString()
+                TransactionId = Guid.NewGuid().ToString(),
+                EmailAddress = context.Message.EmailAddress,
+                CustomerName = context.Message.FirstName
             });
         }
         else

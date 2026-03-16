@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AsyncPipe, CurrencyPipe } from '@angular/common';
@@ -10,6 +10,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 import { ProductActions } from '../../store/product/product.actions';
 import { CartActions } from '../../store/cart/cart.actions';
 import { selectSelectedProduct, selectProductLoading } from '../../store/product/product.selectors';
@@ -28,12 +30,13 @@ import { ReviewsComponent } from './reviews/reviews.component';
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
 })
-export class ProductDetailComponent implements OnInit {
+export class ProductDetailComponent implements OnInit, OnDestroy {
   private store = inject(Store);
   private route = inject(ActivatedRoute);
   private snackBar = inject(MatSnackBar);
   private wishlistService = inject(WishlistService);
   private recentlyViewedService = inject(RecentlyViewedService);
+  private destroy$ = new Subject<void>();
 
   product$ = this.store.select(selectSelectedProduct);
   isAuthenticated$ = this.store.select(selectIsAuthenticated);
@@ -44,9 +47,17 @@ export class ProductDetailComponent implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.store.dispatch(ProductActions.loadProduct({ id }));
-    this.product$.subscribe(product => {
-      if (product) this.recentlyViewedService.addProduct(product);
+    this.product$.pipe(
+      filter(product => product !== null),
+      takeUntil(this.destroy$)
+    ).subscribe(product => {
+      this.recentlyViewedService.addProduct(product!);
     });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   selectImage(index: number) {

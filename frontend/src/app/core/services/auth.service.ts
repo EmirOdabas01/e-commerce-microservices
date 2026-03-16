@@ -29,8 +29,8 @@ export class AuthService {
     return this.http.put<User>(`${this.url}/profile`, request);
   }
 
-  forgotPassword(request: ForgotPasswordRequest): Observable<{ token: string; message: string }> {
-    return this.http.post<{ token: string; message: string }>(`${this.url}/forgot-password`, request);
+  forgotPassword(request: ForgotPasswordRequest): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.url}/forgot-password`, request);
   }
 
   resetPassword(request: ResetPasswordRequest): Observable<{ message: string }> {
