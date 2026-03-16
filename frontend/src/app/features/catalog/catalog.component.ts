@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AsyncPipe, CurrencyPipe, SlicePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
@@ -9,6 +10,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import { ProductActions } from '../../store/product/product.actions';
 import { selectAllProducts, selectProductLoading, selectProductTotalCount, selectProductPageIndex, selectProductPageSize } from '../../store/product/product.selectors';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
@@ -16,9 +18,10 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
 @Component({
   selector: 'app-catalog',
   imports: [
-    RouterLink, AsyncPipe, CurrencyPipe, SlicePipe,
+    RouterLink, AsyncPipe, CurrencyPipe, SlicePipe, FormsModule,
     MatCardModule, MatButtonModule, MatChipsModule, MatPaginatorModule,
-    MatFormFieldModule, MatInputModule, MatIconModule, LoadingSpinnerComponent
+    MatFormFieldModule, MatInputModule, MatIconModule, MatSelectModule,
+    LoadingSpinnerComponent
   ],
   templateUrl: './catalog.component.html',
   styleUrl: './catalog.component.scss'
@@ -34,7 +37,20 @@ export class CatalogComponent implements OnInit {
 
   selectedCategory = '';
   searchQuery = '';
+  minPrice: number | null = null;
+  maxPrice: number | null = null;
+  sortBy = '';
+  sortOrder = 'asc';
   categories = ['Smart Phone', 'White Appliances', 'Home Kitchen', 'Camera'];
+
+  private get filters() {
+    return {
+      minPrice: this.minPrice ?? undefined,
+      maxPrice: this.maxPrice ?? undefined,
+      sortBy: this.sortBy || undefined,
+      sortOrder: this.sortBy ? this.sortOrder : undefined
+    };
+  }
 
   ngOnInit() {
     this.store.dispatch(ProductActions.loadProducts({ pageIndex: 0, pageSize: 10 }));
@@ -46,8 +62,24 @@ export class CatalogComponent implements OnInit {
     if (this.searchQuery) {
       this.store.dispatch(ProductActions.searchProducts({ query: this.searchQuery, pageIndex: 0, pageSize: 10 }));
     } else {
-      this.store.dispatch(ProductActions.loadProducts({ pageIndex: 0, pageSize: 10 }));
+      this.store.dispatch(ProductActions.loadProducts({ pageIndex: 0, pageSize: 10, filters: this.filters }));
     }
+  }
+
+  applyFilters() {
+    this.searchQuery = '';
+    this.selectedCategory = '';
+    this.store.dispatch(ProductActions.loadProducts({ pageIndex: 0, pageSize: 10, filters: this.filters }));
+  }
+
+  clearFilters() {
+    this.minPrice = null;
+    this.maxPrice = null;
+    this.sortBy = '';
+    this.sortOrder = 'asc';
+    this.searchQuery = '';
+    this.selectedCategory = '';
+    this.store.dispatch(ProductActions.loadProducts({ pageIndex: 0, pageSize: 10 }));
   }
 
   onPageChange(event: PageEvent) {
@@ -56,7 +88,7 @@ export class CatalogComponent implements OnInit {
     } else if (this.selectedCategory) {
       this.store.dispatch(ProductActions.loadProductsByCategory({ category: this.selectedCategory }));
     } else {
-      this.store.dispatch(ProductActions.loadProducts({ pageIndex: event.pageIndex, pageSize: event.pageSize }));
+      this.store.dispatch(ProductActions.loadProducts({ pageIndex: event.pageIndex, pageSize: event.pageSize, filters: this.filters }));
     }
   }
 
@@ -64,7 +96,7 @@ export class CatalogComponent implements OnInit {
     this.searchQuery = '';
     if (this.selectedCategory === category) {
       this.selectedCategory = '';
-      this.store.dispatch(ProductActions.loadProducts({ pageIndex: 0, pageSize: 10 }));
+      this.store.dispatch(ProductActions.loadProducts({ pageIndex: 0, pageSize: 10, filters: this.filters }));
     } else {
       this.selectedCategory = category;
       this.store.dispatch(ProductActions.loadProductsByCategory({ category }));

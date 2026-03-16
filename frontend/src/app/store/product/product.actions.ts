@@ -4,7 +4,7 @@ import { Product, PaginatedResult } from '../../core/models';
 export const ProductActions = createActionGroup({
   source: 'Product',
   events: {
-    'Load Products': props<{ pageIndex: number; pageSize: number }>(),
+    'Load Products': props<{ pageIndex: number; pageSize: number; filters?: { minPrice?: number; maxPrice?: number; sortBy?: string; sortOrder?: string } }>(),
     'Load Products Success': props<{ result: PaginatedResult<Product> }>(),
     'Load Products Failure': props<{ error: string }>(),
     'Load Product': props<{ id: string }>(),

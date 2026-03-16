@@ -8,6 +8,18 @@ h1 {
   margin-bottom: 16px;
 }
 
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+
+  mat-form-field {
+    width: 150px;
+  }
+}
+
 mat-chip-set {
   margin-bottom: 24px;
 }

@@ -13,8 +13,8 @@ export class ProductEffects {
   loadProducts$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ProductActions.loadProducts),
-      mergeMap(({ pageIndex, pageSize }) =>
-        this.productService.getProducts(pageIndex, pageSize).pipe(
+      mergeMap(({ pageIndex, pageSize, filters }) =>
+        this.productService.getProducts(pageIndex, pageSize, filters).pipe(
           map(result => ProductActions.loadProductsSuccess({ result })),
           catchError(error => of(ProductActions.loadProductsFailure({ error: error.message })))
         )
