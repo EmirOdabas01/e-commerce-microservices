@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { ProductActions } from '../../store/product/product.actions';
 import { selectAllProducts, selectProductLoading, selectProductTotalCount, selectProductPageIndex, selectProductPageSize } from '../../store/product/product.selectors';
+import { CategoryService } from '../../core/services';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
@@ -28,6 +29,7 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
 })
 export class CatalogComponent implements OnInit {
   private store = inject(Store);
+  private categoryService = inject(CategoryService);
 
   products$ = this.store.select(selectAllProducts);
   loading$ = this.store.select(selectProductLoading);
@@ -41,7 +43,7 @@ export class CatalogComponent implements OnInit {
   maxPrice: number | null = null;
   sortBy = '';
   sortOrder = 'asc';
-  categories = ['Smart Phone', 'White Appliances', 'Home Kitchen', 'Camera'];
+  categories: string[] = [];
 
   private get filters() {
     return {
@@ -54,6 +56,9 @@ export class CatalogComponent implements OnInit {
 
   ngOnInit() {
     this.store.dispatch(ProductActions.loadProducts({ pageIndex: 0, pageSize: 10 }));
+    this.categoryService.getCategories().subscribe(cats => {
+      this.categories = cats.map(c => c.name);
+    });
   }
 
   onSearch(query: string) {

@@ -6,3 +6,4 @@ export * from './address.model';
 export * from './payment-method.model';
 export * from './review.model';
 export * from './wishlist.model';
+export * from './category.model';

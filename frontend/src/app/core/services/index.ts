@@ -8,3 +8,4 @@ export * from './payment-method.service';
 export * from './review.service';
 export * from './wishlist.service';
 export * from './recently-viewed.service';
+export * from './category.service';
