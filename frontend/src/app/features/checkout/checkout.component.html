@@ -2,6 +2,16 @@
 
 <mat-stepper linear #stepper>
   <mat-step [stepControl]="shippingForm" label="Shipping">
+    @if (savedAddresses.length) {
+      <mat-form-field appearance="outline" class="saved-select">
+        <mat-label>Use saved address</mat-label>
+        <mat-select (selectionChange)="selectAddress($event.value)">
+          @for (addr of savedAddresses; track addr.id) {
+            <mat-option [value]="addr">{{ addr.label }} - {{ addr.addressLine }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
     <form [formGroup]="shippingForm">
       <div class="form-row">
         <mat-form-field appearance="outline">
@@ -40,6 +50,16 @@
   </mat-step>
 
   <mat-step [stepControl]="paymentForm" label="Payment">
+    @if (savedPaymentMethods.length) {
+      <mat-form-field appearance="outline" class="saved-select">
+        <mat-label>Use saved payment method</mat-label>
+        <mat-select (selectionChange)="selectPaymentMethod($event.value)">
+          @for (pm of savedPaymentMethods; track pm.id) {
+            <mat-option [value]="pm">{{ pm.label }} - **** {{ pm.cardNumberLast4 }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
     <form [formGroup]="paymentForm">
       <mat-form-field appearance="outline">
         <mat-label>Card Name</mat-label>
