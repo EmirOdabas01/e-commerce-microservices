@@ -7,6 +7,7 @@ using FluentValidation;
 using Marten;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using BuildingBlocks.Messaging;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,6 +49,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddMessageBroker(builder.Configuration, typeof(Program).Assembly);
 
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Database")!);

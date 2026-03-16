@@ -1,9 +1,13 @@
+using BuildingBlocks.Messaging.Events;
+using MassTransit;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Order.Application.Commands.CancelOrder;
 using Order.Application.Commands.CreateOrder;
 using Order.Application.Commands.DeleteOrder;
 using Order.Application.Commands.RefundOrder;
 using Order.Application.Commands.UpdateOrder;
+using Order.Application.Data;
 using Order.Application.Queries.GetOrders;
 using Order.Application.Queries.GetOrdersByUser;
 
@@ -43,9 +47,20 @@ public static class OrderEndpoints
         })
         .WithName("UpdateOrder");
 
-        group.MapPut("/{id:guid}/cancel", async (Guid id, ISender sender) =>
+        group.MapPut("/{id:guid}/cancel", async (Guid id, ISender sender, IOrderDbContext dbContext, IPublishEndpoint publishEndpoint) =>
         {
+            var order = await dbContext.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == id);
             var result = await sender.Send(new CancelOrderCommand(id));
+
+            if (result.IsSuccess && order is not null)
+            {
+                await publishEndpoint.Publish(new OrderCancelledEvent
+                {
+                    OrderId = id,
+                    Items = order.Items.Select(i => new OrderCancelledItem(i.ProductId, i.Quantity)).ToList()
+                });
+            }
+
             return Results.Ok(result);
         })
         .WithName("CancelOrder");
