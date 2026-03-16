@@ -70,6 +70,12 @@ export class ReviewsComponent implements OnInit {
     });
   }
 
+  reportReview(id: string) {
+    this.reviewService.reportReview(id).subscribe(() => {
+      this.snackBar.open('Review reported. Thank you.', '', { duration: 2000 });
+    });
+  }
+
   getStars(rating: number): number[] {
     return Array.from({ length: 5 }, (_, i) => i < rating ? 1 : 0);
   }

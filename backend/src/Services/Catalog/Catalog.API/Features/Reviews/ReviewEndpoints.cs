@@ -63,6 +63,29 @@ public class ReviewEndpoints : ICarterModule
         .WithName("CreateReview")
         .RequireAuthorization();
 
+        app.MapPost("/api/products/reviews/{id:guid}/report", async (Guid id, HttpContext context, IDocumentSession session) =>
+        {
+            var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var review = await session.LoadAsync<Review>(id);
+
+            if (review is null) return Results.NotFound();
+
+            var report = new ReviewReport
+            {
+                Id = Guid.NewGuid(),
+                ReviewId = id,
+                ReportedBy = userId,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            session.Store(report);
+            await session.SaveChangesAsync();
+
+            return Results.Ok(new { Message = "Review reported." });
+        })
+        .WithName("ReportReview")
+        .RequireAuthorization();
+
         app.MapDelete("/api/products/reviews/{id:guid}", async (Guid id, HttpContext context, IDocumentSession session) =>
         {
             var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier)!;

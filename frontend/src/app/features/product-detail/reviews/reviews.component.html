@@ -54,11 +54,15 @@
         <mat-card-content>
           <p>{{ review.text }}</p>
         </mat-card-content>
-        @if (review.userId === currentUserId) {
-          <mat-card-actions>
+        <mat-card-actions>
+          @if (review.userId === currentUserId) {
             <button mat-button color="warn" (click)="deleteReview(review.id)">Delete</button>
-          </mat-card-actions>
-        }
+          } @else if (isAuthenticated) {
+            <button mat-button (click)="reportReview(review.id)">
+              <mat-icon>flag</mat-icon> Report
+            </button>
+          }
+        </mat-card-actions>
       </mat-card>
     } @empty {
       <p>No reviews yet.</p>

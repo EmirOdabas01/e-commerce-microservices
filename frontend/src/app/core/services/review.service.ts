@@ -24,4 +24,8 @@ export class ReviewService {
   deleteReview(id: string): Observable<void> {
     return this.http.delete<void>(`${this.url}/reviews/${id}`);
   }
+
+  reportReview(id: string): Observable<void> {
+    return this.http.post<void>(`${this.url}/reviews/${id}/report`, {});
+  }
 }
