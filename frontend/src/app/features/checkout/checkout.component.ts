@@ -57,6 +57,7 @@ export class CheckoutComponent implements OnInit {
   couponCode = '';
   discountAmount = 0;
   couponApplied = false;
+  taxRate = 0.08;
 
   shippingForm = this.fb.group({
     firstName: ['', Validators.required],
@@ -133,8 +134,14 @@ export class CheckoutComponent implements OnInit {
     this.couponApplied = false;
   }
 
+  getTax(cartTotal: number): number {
+    const subtotal = cartTotal - this.discountAmount;
+    return Math.max(0, subtotal * this.taxRate);
+  }
+
   getOrderTotal(cartTotal: number): number {
-    return cartTotal + this.selectedShippingMethod.price - this.discountAmount;
+    const subtotal = cartTotal - this.discountAmount;
+    return subtotal + this.selectedShippingMethod.price + this.getTax(cartTotal);
   }
 
   placeOrder() {
@@ -157,7 +164,7 @@ export class CheckoutComponent implements OnInit {
       checkout: {
         userName,
         customerId,
-        totalPrice: totalPrice + this.selectedShippingMethod.price - this.discountAmount,
+        totalPrice: this.getOrderTotal(totalPrice),
         ...this.shippingForm.getRawValue() as any,
         ...this.paymentForm.getRawValue() as any,
         paymentMethod: 1

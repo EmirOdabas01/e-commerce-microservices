@@ -131,6 +131,10 @@
       }
     </div>
 
+    <div class="review-item">
+      <span>Tax ({{ taxRate * 100 }}%)</span>
+      <span>{{ getTax((totalPrice$ | async) || 0) | currency }}</span>
+    </div>
     <div class="review-total">
       <strong>Total: {{ getOrderTotal((totalPrice$ | async) || 0) | currency }}</strong>
     </div>
