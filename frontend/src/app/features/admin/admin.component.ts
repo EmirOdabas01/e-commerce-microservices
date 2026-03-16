@@ -5,29 +5,24 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
 import { ProductActions } from '../../store/product/product.actions';
 import { selectAllProducts, selectProductLoading } from '../../store/product/product.selectors';
 import { Product } from '../../core/models';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
+import { AdminOrdersComponent } from './admin-orders/admin-orders.component';
 
 @Component({
   selector: 'app-admin',
   imports: [
-    AsyncPipe,
-    CurrencyPipe,
-    ReactiveFormsModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatCardModule,
-    LoadingSpinnerComponent
+    AsyncPipe, CurrencyPipe, ReactiveFormsModule,
+    MatTableModule, MatButtonModule, MatIconModule, MatDialogModule,
+    MatFormFieldModule, MatInputModule, MatCardModule, MatTabsModule,
+    LoadingSpinnerComponent, AdminOrdersComponent
   ],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
@@ -38,7 +33,7 @@ export class AdminComponent implements OnInit {
 
   products$ = this.store.select(selectAllProducts);
   loading$ = this.store.select(selectProductLoading);
-  displayedColumns = ['name', 'category', 'price', 'actions'];
+  displayedColumns = ['name', 'category', 'price', 'stock', 'actions'];
 
   showForm = false;
   editingProduct: Product | null = null;
@@ -49,7 +44,8 @@ export class AdminComponent implements OnInit {
     category: ['', Validators.required],
     description: ['', Validators.required],
     imageFile: ['', Validators.required],
-    price: [0, [Validators.required, Validators.min(0.01)]]
+    price: [0, [Validators.required, Validators.min(0.01)]],
+    stock: [0, [Validators.required, Validators.min(0)]]
   });
 
   ngOnInit() {
@@ -86,7 +82,9 @@ export class AdminComponent implements OnInit {
       category: formValue.category!.split(',').map(c => c.trim()),
       description: formValue.description!,
       imageFile: formValue.imageFile!,
-      price: formValue.price!
+      imageFiles: [formValue.imageFile!],
+      price: formValue.price!,
+      stock: formValue.stock!
     };
 
     if (this.editingProduct) {

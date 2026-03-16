@@ -24,6 +24,15 @@ h1 {
   }
 }
 
+.tab-content {
+  padding: 24px 0;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
 table {
   width: 100%;
   margin-top: 24px;
