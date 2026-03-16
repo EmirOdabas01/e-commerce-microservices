@@ -25,12 +25,21 @@ const initialState: ProductState = productAdapter.getInitialState({
 
 export const productReducer = createReducer(
   initialState,
-  on(ProductActions.loadProducts, ProductActions.loadProductsByCategory, (state) => ({
+  on(ProductActions.loadProducts, ProductActions.loadProductsByCategory, ProductActions.searchProducts, (state) => ({
     ...state,
     loading: true,
     error: null
   })),
   on(ProductActions.loadProductsSuccess, (state, { result }) =>
+    productAdapter.setAll(result.data, {
+      ...state,
+      totalCount: result.count,
+      pageIndex: result.pageIndex,
+      pageSize: result.pageSize,
+      loading: false
+    })
+  ),
+  on(ProductActions.searchProductsSuccess, (state, { result }) =>
     productAdapter.setAll(result.data, {
       ...state,
       totalCount: result.count,
@@ -71,6 +80,7 @@ export const productReducer = createReducer(
     ProductActions.createProductFailure,
     ProductActions.updateProductFailure,
     ProductActions.deleteProductFailure,
+    ProductActions.searchProductsFailure,
     (state, { error }) => ({ ...state, loading: false, error })
   )
 );

@@ -16,6 +16,14 @@ export class ProductService {
     return this.http.get<PaginatedResult<Product>>(this.url, { params });
   }
 
+  searchProducts(query: string, pageIndex = 0, pageSize = 10): Observable<PaginatedResult<Product>> {
+    const params = new HttpParams()
+      .set('Query', query)
+      .set('PageNumber', pageIndex + 1)
+      .set('PageSize', pageSize);
+    return this.http.get<PaginatedResult<Product>>(`${this.url}/search`, { params });
+  }
+
   getProduct(id: string): Observable<Product> {
     return this.http.get<Product>(`${this.url}/${id}`);
   }

@@ -46,6 +46,18 @@ export class ProductEffects {
     )
   );
 
+  searchProducts$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProductActions.searchProducts),
+      mergeMap(({ query, pageIndex, pageSize }) =>
+        this.productService.searchProducts(query, pageIndex, pageSize).pipe(
+          map(result => ProductActions.searchProductsSuccess({ result })),
+          catchError(error => of(ProductActions.searchProductsFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
   createProduct$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ProductActions.createProduct),

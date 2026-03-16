@@ -1,5 +1,11 @@
 <h1>Catalog</h1>
 
+<mat-form-field appearance="outline" class="search-field">
+  <mat-label>Search products</mat-label>
+  <input matInput [value]="searchQuery" (keyup.enter)="onSearch($any($event.target).value)" placeholder="Search by name or description...">
+  <mat-icon matSuffix>search</mat-icon>
+</mat-form-field>
+
 <mat-chip-set>
   @for (category of categories; track category) {
     <mat-chip-option [selected]="selectedCategory === category" (click)="filterByCategory(category)">

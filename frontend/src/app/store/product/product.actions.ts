@@ -22,5 +22,8 @@ export const ProductActions = createActionGroup({
     'Delete Product': props<{ id: string }>(),
     'Delete Product Success': props<{ id: string }>(),
     'Delete Product Failure': props<{ error: string }>(),
+    'Search Products': props<{ query: string; pageIndex: number; pageSize: number }>(),
+    'Search Products Success': props<{ result: PaginatedResult<Product> }>(),
+    'Search Products Failure': props<{ error: string }>(),
   }
 });
