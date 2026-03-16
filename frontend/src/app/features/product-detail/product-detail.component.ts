@@ -14,12 +14,14 @@ import { ProductActions } from '../../store/product/product.actions';
 import { CartActions } from '../../store/cart/cart.actions';
 import { selectSelectedProduct, selectProductLoading } from '../../store/product/product.selectors';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
+import { ReviewsComponent } from './reviews/reviews.component';
 
 @Component({
   selector: 'app-product-detail',
   imports: [
     AsyncPipe, CurrencyPipe, FormsModule, MatCardModule, MatButtonModule,
-    MatChipsModule, MatFormFieldModule, MatInputModule, MatIconModule, LoadingSpinnerComponent
+    MatChipsModule, MatFormFieldModule, MatInputModule, MatIconModule,
+    LoadingSpinnerComponent, ReviewsComponent
   ],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
