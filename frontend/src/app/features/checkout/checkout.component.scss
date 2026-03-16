@@ -28,6 +28,23 @@ form {
   }
 }
 
+.shipping-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 16px 0;
+
+  .shipping-option {
+    display: flex;
+    flex-direction: column;
+
+    .estimate {
+      color: #666;
+      font-size: 0.85rem;
+    }
+  }
+}
+
 .step-actions {
   display: flex;
   gap: 8px;

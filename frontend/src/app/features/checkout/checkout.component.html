@@ -45,6 +45,19 @@
           <input matInput formControlName="zipCode">
         </mat-form-field>
       </div>
+
+      <h3>Shipping Method</h3>
+      <mat-radio-group [value]="selectedShippingMethod" class="shipping-methods">
+        @for (method of shippingMethods; track method.id) {
+          <mat-radio-button [value]="method" (change)="onShippingMethodChange(method)">
+            <div class="shipping-option">
+              <strong>{{ method.label }}</strong> - {{ method.price | currency }}
+              <span class="estimate">{{ method.estimatedDays }}</span>
+            </div>
+          </mat-radio-button>
+        }
+      </mat-radio-group>
+
       <button mat-raised-button color="primary" matStepperNext [disabled]="shippingForm.invalid">Next</button>
     </form>
   </mat-step>
@@ -94,8 +107,12 @@
         <span>{{ item.price * item.quantity | currency }}</span>
       </div>
     }
+    <div class="review-item">
+      <span>{{ selectedShippingMethod.label }}</span>
+      <span>{{ selectedShippingMethod.price | currency }}</span>
+    </div>
     <div class="review-total">
-      <strong>Total: {{ totalPrice$ | async | currency }}</strong>
+      <strong>Total: {{ getOrderTotal((totalPrice$ | async) || 0) | currency }}</strong>
     </div>
     <div class="step-actions">
       <button mat-button matStepperPrevious>Back</button>

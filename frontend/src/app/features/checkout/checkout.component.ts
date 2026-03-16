@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { MatRadioModule } from '@angular/material/radio';
 import { CartActions } from '../../store/cart/cart.actions';
 import { selectCartItems, selectCartTotalPrice, selectCartLoading } from '../../store/cart/cart.selectors';
 import { selectUser } from '../../store/auth/auth.selectors';
@@ -14,11 +15,19 @@ import { AddressService, PaymentMethodService } from '../../core/services';
 import { Address, PaymentMethodResponse } from '../../core/models';
 import { take } from 'rxjs';
 
+export interface ShippingMethod {
+  id: string;
+  label: string;
+  price: number;
+  estimatedDays: string;
+}
+
 @Component({
   selector: 'app-checkout',
   imports: [
     AsyncPipe, CurrencyPipe, ReactiveFormsModule, MatStepperModule,
-    MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule
+    MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule,
+    MatRadioModule
   ],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.scss'
@@ -35,6 +44,13 @@ export class CheckoutComponent implements OnInit {
 
   savedAddresses: Address[] = [];
   savedPaymentMethods: PaymentMethodResponse[] = [];
+
+  shippingMethods: ShippingMethod[] = [
+    { id: 'standard', label: 'Standard Shipping', price: 5.99, estimatedDays: '5-7 business days' },
+    { id: 'express', label: 'Express Shipping', price: 14.99, estimatedDays: '2-3 business days' },
+    { id: 'overnight', label: 'Overnight Shipping', price: 29.99, estimatedDays: '1 business day' }
+  ];
+  selectedShippingMethod: ShippingMethod = this.shippingMethods[0];
 
   shippingForm = this.fb.group({
     firstName: ['', Validators.required],
@@ -83,6 +99,14 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
+  onShippingMethodChange(method: ShippingMethod) {
+    this.selectedShippingMethod = method;
+  }
+
+  getOrderTotal(cartTotal: number): number {
+    return cartTotal + this.selectedShippingMethod.price;
+  }
+
   placeOrder() {
     if (this.shippingForm.invalid || this.paymentForm.invalid) return;
 
@@ -103,7 +127,7 @@ export class CheckoutComponent implements OnInit {
       checkout: {
         userName,
         customerId,
-        totalPrice,
+        totalPrice: totalPrice + this.selectedShippingMethod.price,
         ...this.shippingForm.getRawValue() as any,
         ...this.paymentForm.getRawValue() as any,
         paymentMethod: 1
