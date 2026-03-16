@@ -66,6 +66,16 @@
     margin-bottom: 16px;
   }
 
+  .stock {
+    font-weight: 500;
+    color: #4caf50;
+    margin-bottom: 16px;
+
+    &.out-of-stock {
+      color: #f44336;
+    }
+  }
+
   .description {
     color: #666;
     line-height: 1.6;

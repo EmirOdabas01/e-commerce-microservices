@@ -6,6 +6,7 @@ export interface Product {
   imageFile: string;
   imageFiles: string[];
   price: number;
+  stock: number;
 }
 
 export interface PaginatedResult<T> {

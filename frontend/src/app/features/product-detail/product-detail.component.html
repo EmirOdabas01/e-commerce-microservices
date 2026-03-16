@@ -26,6 +26,13 @@
       <h1>{{ product.name }}</h1>
       <p class="price">{{ product.price | currency }}</p>
       <p class="description">{{ product.description }}</p>
+      <p class="stock" [class.out-of-stock]="product.stock <= 0">
+        @if (product.stock > 0) {
+          In Stock ({{ product.stock }} available)
+        } @else {
+          Out of Stock
+        }
+      </p>
       <div class="categories">
         @for (cat of product.category; track cat) {
           <mat-chip>{{ cat }}</mat-chip>
@@ -36,7 +43,7 @@
           <mat-label>Qty</mat-label>
           <input matInput type="number" [(ngModel)]="quantity" min="1" max="10">
         </mat-form-field>
-        <button mat-raised-button color="primary" (click)="addToCart(product)">Add to Cart</button>
+        <button mat-raised-button color="primary" (click)="addToCart(product)" [disabled]="product.stock <= 0">Add to Cart</button>
         @if (isAuthenticated$ | async) {
           <button mat-stroked-button (click)="addToWishlist(product.id)">
             <mat-icon>favorite_border</mat-icon> Wishlist

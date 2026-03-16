@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Catalog.API.Features.CreateProduct;
 
-public record CreateProductRequest(string Name, List<string> Category, string Description, string ImageFile, List<string>? ImageFiles, decimal Price);
+public record CreateProductRequest(string Name, List<string> Category, string Description, string ImageFile, List<string>? ImageFiles, decimal Price, int Stock = 0);
 public record CreateProductResponse(Guid Id);
 
 public class CreateProductEndpoint : ICarterModule
@@ -16,7 +16,7 @@ public class CreateProductEndpoint : ICarterModule
         {
             var sellerId = context.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             var imageFiles = request.ImageFiles ?? (string.IsNullOrEmpty(request.ImageFile) ? [] : [request.ImageFile]);
-            var command = new CreateProductCommand(request.Name, request.Category, request.Description, imageFiles, request.Price, sellerId);
+            var command = new CreateProductCommand(request.Name, request.Category, request.Description, imageFiles, request.Price, request.Stock, sellerId);
             var result = await sender.Send(command);
             var response = result.Adapt<CreateProductResponse>();
             return Results.Created($"/api/products/{response.Id}", response);
