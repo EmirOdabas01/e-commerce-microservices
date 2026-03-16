@@ -111,6 +111,11 @@ export class AuthEffects {
   logout$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.logout),
+      exhaustMap(() =>
+        this.authService.logout().pipe(
+          catchError(() => of(undefined))
+        )
+      ),
       tap(() => {
         this.cookieService.delete('token');
         this.cookieService.delete('refreshToken');

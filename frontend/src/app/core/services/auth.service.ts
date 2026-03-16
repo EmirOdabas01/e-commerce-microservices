@@ -36,4 +36,8 @@ export class AuthService {
   resetPassword(request: ResetPasswordRequest): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${this.url}/reset-password`, request);
   }
+
+  logout(): Observable<void> {
+    return this.http.post<void>(`${this.url}/logout`, {});
+  }
 }

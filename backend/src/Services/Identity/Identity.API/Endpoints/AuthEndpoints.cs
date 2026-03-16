@@ -126,6 +126,22 @@ public static class AuthEndpoints
         .WithName("UpdateProfile")
         .RequireAuthorization();
 
+        group.MapPost("/logout", async (HttpContext context, UserManager<AppUser> userManager) =>
+        {
+            var user = await userManager.GetUserAsync(context.User);
+
+            if (user is null)
+            {
+                return Results.Unauthorized();
+            }
+
+            await userManager.UpdateSecurityStampAsync(user);
+
+            return Results.Ok(new { Message = "Logged out successfully." });
+        })
+        .WithName("Logout")
+        .RequireAuthorization();
+
         group.MapPost("/forgot-password", async (ForgotPasswordRequest request, UserManager<AppUser> userManager) =>
         {
             var user = await userManager.FindByEmailAsync(request.Email);
