@@ -9,6 +9,7 @@ public class IdentityDbContext : IdentityDbContext<AppUser>
     public IdentityDbContext(DbContextOptions<IdentityDbContext> options) : base(options) { }
 
     public DbSet<Address> Addresses => Set<Address>();
+    public DbSet<PaymentMethod> PaymentMethods => Set<PaymentMethod>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -26,6 +27,16 @@ public class IdentityDbContext : IdentityDbContext<AppUser>
             entity.Property(a => a.ZipCode).HasMaxLength(20);
             entity.Property(a => a.EmailAddress).HasMaxLength(150);
             entity.HasIndex(a => a.UserId);
+        });
+
+        builder.Entity<PaymentMethod>(entity =>
+        {
+            entity.HasKey(p => p.Id);
+            entity.Property(p => p.Label).HasMaxLength(50);
+            entity.Property(p => p.CardName).HasMaxLength(100);
+            entity.Property(p => p.CardNumberLast4).HasMaxLength(4);
+            entity.Property(p => p.Expiration).HasMaxLength(10);
+            entity.HasIndex(p => p.UserId);
         });
     }
 }
