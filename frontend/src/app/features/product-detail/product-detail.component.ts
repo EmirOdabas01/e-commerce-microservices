@@ -14,6 +14,8 @@ import { ProductActions } from '../../store/product/product.actions';
 import { CartActions } from '../../store/cart/cart.actions';
 import { selectSelectedProduct, selectProductLoading } from '../../store/product/product.selectors';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
+import { WishlistService } from '../../core/services';
+import { selectIsAuthenticated } from '../../store/auth/auth.selectors';
 import { ReviewsComponent } from './reviews/reviews.component';
 
 @Component({
@@ -30,8 +32,10 @@ export class ProductDetailComponent implements OnInit {
   private store = inject(Store);
   private route = inject(ActivatedRoute);
   private snackBar = inject(MatSnackBar);
+  private wishlistService = inject(WishlistService);
 
   product$ = this.store.select(selectSelectedProduct);
+  isAuthenticated$ = this.store.select(selectIsAuthenticated);
   loading$ = this.store.select(selectProductLoading);
   quantity = 1;
   selectedImageIndex = 0;
@@ -51,6 +55,12 @@ export class ProductDetailComponent implements OnInit {
 
   nextImage(total: number) {
     this.selectedImageIndex = (this.selectedImageIndex + 1) % total;
+  }
+
+  addToWishlist(productId: string) {
+    this.wishlistService.addToWishlist(productId).subscribe(() => {
+      this.snackBar.open('Added to wishlist!', 'Close', { duration: 2000 });
+    });
   }
 
   addToCart(product: any) {

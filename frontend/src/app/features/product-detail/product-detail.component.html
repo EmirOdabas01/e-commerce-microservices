@@ -37,6 +37,11 @@
           <input matInput type="number" [(ngModel)]="quantity" min="1" max="10">
         </mat-form-field>
         <button mat-raised-button color="primary" (click)="addToCart(product)">Add to Cart</button>
+        @if (isAuthenticated$ | async) {
+          <button mat-stroked-button (click)="addToWishlist(product.id)">
+            <mat-icon>favorite_border</mat-icon> Wishlist
+          </button>
+        }
       </div>
     </div>
   </div>

@@ -1,0 +1,21 @@
+<h1>My Wishlist</h1>
+
+<div class="wishlist-grid">
+  @for (item of items; track item.id) {
+    <mat-card>
+      <img mat-card-image [src]="item.imageFile" [alt]="item.productName">
+      <mat-card-header>
+        <mat-card-title>{{ item.productName }}</mat-card-title>
+        <mat-card-subtitle>{{ item.price | currency }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-actions>
+        <a mat-button color="primary" [routerLink]="['/product', item.productId]">View</a>
+        <button mat-button color="warn" (click)="remove(item.productId)">
+          <mat-icon>delete</mat-icon> Remove
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  } @empty {
+    <p>Your wishlist is empty.</p>
+  }
+</div>
