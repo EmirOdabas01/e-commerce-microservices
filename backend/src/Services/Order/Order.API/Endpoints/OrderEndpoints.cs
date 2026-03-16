@@ -2,6 +2,9 @@ using BuildingBlocks.Messaging.Events;
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 using Order.Application.Commands.CancelOrder;
 using Order.Application.Commands.CreateOrder;
 using Order.Application.Commands.DeleteOrder;
@@ -78,6 +81,74 @@ public static class OrderEndpoints
             return Results.Ok(result);
         })
         .WithName("DeleteOrder");
+
+        group.MapGet("/{id:guid}/invoice", async (Guid id, IOrderDbContext dbContext) =>
+        {
+            var order = await dbContext.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == id);
+            if (order is null) return Results.NotFound();
+
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var pdf = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(40);
+
+                    page.Header().Text("INVOICE").FontSize(24).Bold().AlignCenter();
+
+                    page.Content().PaddingVertical(20).Column(col =>
+                    {
+                        col.Item().Text($"Order ID: {order.Id}").FontSize(10);
+                        col.Item().Text($"Date: {order.CreatedAt:yyyy-MM-dd}").FontSize(10);
+                        col.Item().Text($"Customer: {order.ShippingAddress.FirstName} {order.ShippingAddress.LastName}").FontSize(10);
+                        col.Item().Text($"Email: {order.ShippingAddress.EmailAddress}").FontSize(10);
+                        col.Item().Text($"Address: {order.ShippingAddress.AddressLine}, {order.ShippingAddress.State}, {order.ShippingAddress.Country} {order.ShippingAddress.ZipCode}").FontSize(10);
+
+                        col.Item().PaddingVertical(10).LineHorizontal(1);
+
+                        col.Item().Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn(3);
+                                columns.RelativeColumn(1);
+                                columns.RelativeColumn(1);
+                                columns.RelativeColumn(1);
+                            });
+
+                            table.Header(header =>
+                            {
+                                header.Cell().Text("Product").Bold();
+                                header.Cell().Text("Qty").Bold();
+                                header.Cell().Text("Price").Bold();
+                                header.Cell().Text("Total").Bold();
+                            });
+
+                            foreach (var item in order.Items)
+                            {
+                                table.Cell().Text(item.ProductName);
+                                table.Cell().Text(item.Quantity.ToString());
+                                table.Cell().Text($"${item.Price:F2}");
+                                table.Cell().Text($"${item.Price * item.Quantity:F2}");
+                            }
+                        });
+
+                        col.Item().PaddingVertical(10).LineHorizontal(1);
+                        col.Item().AlignRight().Text($"Total: ${order.TotalPrice:F2}").FontSize(14).Bold();
+                        col.Item().AlignRight().Text($"Status: {order.Status}").FontSize(10);
+                    });
+
+                    page.Footer().AlignCenter().Text("Thank you for your purchase!").FontSize(9);
+                });
+            });
+
+            var bytes = pdf.GeneratePdf();
+
+            return Results.File(bytes, "application/pdf", $"invoice-{order.Id}.pdf");
+        })
+        .WithName("GetOrderInvoice");
 
         group.MapGet("/analytics", async (IOrderDbContext dbContext) =>
         {

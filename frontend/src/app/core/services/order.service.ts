@@ -27,4 +27,8 @@ export class OrderService {
   refundOrder(id: string): Observable<void> {
     return this.http.put<void>(`${this.url}/${id}/refund`, {});
   }
+
+  downloadInvoice(id: string): Observable<Blob> {
+    return this.http.get(`${this.url}/${id}/invoice`, { responseType: 'blob' });
+  }
 }

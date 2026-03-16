@@ -82,6 +82,9 @@
           @if (order.status === OrderStatus.Completed) {
             <button mat-button color="accent" (click)="refundOrder(order.id)">Refund</button>
           }
+          <button mat-button (click)="downloadInvoice(order.id)">
+            <mat-icon>download</mat-icon> Invoice
+          </button>
         </td>
       </ng-container>
 

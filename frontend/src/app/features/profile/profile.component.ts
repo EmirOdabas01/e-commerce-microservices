@@ -14,6 +14,7 @@ import { selectAllOrders, selectOrderLoading } from '../../store/order/order.sel
 import { OrderActions } from '../../store/order/order.actions';
 import { AuthActions } from '../../store/auth/auth.actions';
 import { OrderStatus } from '../../core/models';
+import { OrderService } from '../../core/services';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { AddressManagementComponent } from './address-management/address-management.component';
 import { PaymentMethodsComponent } from './payment-methods/payment-methods.component';
@@ -33,6 +34,7 @@ import { take } from 'rxjs';
 export class ProfileComponent implements OnInit {
   private store = inject(Store);
   private fb = inject(FormBuilder);
+  private orderService = inject(OrderService);
 
   user$ = this.store.select(selectUser);
   orders$ = this.store.select(selectAllOrders);
@@ -76,6 +78,17 @@ export class ProfileComponent implements OnInit {
       }));
       this.editing = false;
     }
+  }
+
+  downloadInvoice(id: string) {
+    this.orderService.downloadInvoice(id).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `invoice-${id}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
   }
 
   cancelOrder(id: string) {
