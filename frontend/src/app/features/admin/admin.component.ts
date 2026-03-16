@@ -18,6 +18,7 @@ import { AdminOrdersComponent } from './admin-orders/admin-orders.component';
 import { AdminUsersComponent } from './admin-users/admin-users.component';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 import { AdminCategoriesComponent } from './admin-categories/admin-categories.component';
+import { AdminCouponsComponent } from './admin-coupons/admin-coupons.component';
 
 @Component({
   selector: 'app-admin',
@@ -26,7 +27,7 @@ import { AdminCategoriesComponent } from './admin-categories/admin-categories.co
     MatTableModule, MatButtonModule, MatIconModule, MatDialogModule,
     MatFormFieldModule, MatInputModule, MatCardModule, MatTabsModule,
     LoadingSpinnerComponent, AdminOrdersComponent, AdminUsersComponent,
-    AdminDashboardComponent, AdminCategoriesComponent
+    AdminDashboardComponent, AdminCategoriesComponent, AdminCouponsComponent
   ],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'

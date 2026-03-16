@@ -111,6 +111,26 @@
       <span>{{ selectedShippingMethod.label }}</span>
       <span>{{ selectedShippingMethod.price | currency }}</span>
     </div>
+    @if (discountAmount > 0) {
+      <div class="review-item discount">
+        <span>Discount ({{ couponCode }})</span>
+        <span>-{{ discountAmount | currency }}</span>
+      </div>
+    }
+
+    <div class="coupon-section">
+      @if (!couponApplied) {
+        <mat-form-field appearance="outline">
+          <mat-label>Coupon Code</mat-label>
+          <input matInput [(ngModel)]="couponCode" placeholder="Enter coupon code">
+        </mat-form-field>
+        <button mat-stroked-button (click)="applyCoupon()" [disabled]="!couponCode.trim()">Apply</button>
+      } @else {
+        <span class="coupon-applied">Coupon "{{ couponCode }}" applied!</span>
+        <button mat-button color="warn" (click)="removeCoupon()">Remove</button>
+      }
+    </div>
+
     <div class="review-total">
       <strong>Total: {{ getOrderTotal((totalPrice$ | async) || 0) | currency }}</strong>
     </div>
