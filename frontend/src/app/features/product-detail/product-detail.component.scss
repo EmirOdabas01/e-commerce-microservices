@@ -14,6 +14,41 @@
     max-height: 500px;
     object-fit: cover;
   }
+
+  .image-gallery {
+    position: relative;
+
+    .nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.8);
+
+      &.prev { left: 8px; }
+      &.next { right: 8px; }
+    }
+  }
+
+  .image-thumbnails {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+
+    img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.2s;
+
+      &.active {
+        border-color: #3f51b5;
+      }
+    }
+  }
 }
 
 .product-info {

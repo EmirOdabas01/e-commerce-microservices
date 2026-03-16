@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Catalog.API.Features.UpdateProduct;
 
-public record UpdateProductRequest(Guid Id, string Name, List<string> Category, string Description, string ImageFile, decimal Price);
+public record UpdateProductRequest(Guid Id, string Name, List<string> Category, string Description, string ImageFile, List<string>? ImageFiles, decimal Price);
 public record UpdateProductResponse(bool IsSuccess);
 
 public class UpdateProductEndpoint : ICarterModule
@@ -16,7 +16,8 @@ public class UpdateProductEndpoint : ICarterModule
         {
             var sellerId = context.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             var isAdmin = context.User.IsInRole("Admin");
-            var command = new UpdateProductCommand(request.Id, request.Name, request.Category, request.Description, request.ImageFile, request.Price, sellerId, isAdmin);
+            var imageFiles = request.ImageFiles ?? (string.IsNullOrEmpty(request.ImageFile) ? [] : [request.ImageFile]);
+            var command = new UpdateProductCommand(request.Id, request.Name, request.Category, request.Description, imageFiles, request.Price, sellerId, isAdmin);
             var result = await sender.Send(command);
             var response = result.Adapt<UpdateProductResponse>();
             return Results.Ok(response);

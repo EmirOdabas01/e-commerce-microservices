@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Catalog.API.Features.GetProductById;
 
-public record GetProductByIdResponse(Guid Id, string Name, List<string> Category, string Description, string ImageFile, decimal Price);
+public record GetProductByIdResponse(Guid Id, string Name, List<string> Category, string Description, string ImageFile, List<string> ImageFiles, decimal Price);
 
 public class GetProductByIdEndpoint : ICarterModule
 {

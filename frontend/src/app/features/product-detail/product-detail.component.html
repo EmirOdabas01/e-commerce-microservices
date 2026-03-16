@@ -3,7 +3,24 @@
 } @else if (product$ | async; as product) {
   <div class="product-detail">
     <div class="product-image">
-      <img [src]="product.imageFile" [alt]="product.name">
+      @if (product.imageFiles?.length > 1) {
+        <div class="image-gallery">
+          <button mat-icon-button class="nav-btn prev" (click)="prevImage(product.imageFiles.length)">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <img [src]="product.imageFiles[selectedImageIndex]" [alt]="product.name">
+          <button mat-icon-button class="nav-btn next" (click)="nextImage(product.imageFiles.length)">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+        <div class="image-thumbnails">
+          @for (img of product.imageFiles; track img; let i = $index) {
+            <img [src]="img" [alt]="product.name" [class.active]="i === selectedImageIndex" (click)="selectImage(i)">
+          }
+        </div>
+      } @else {
+        <img [src]="product.imageFile" [alt]="product.name">
+      }
     </div>
     <div class="product-info">
       <h1>{{ product.name }}</h1>

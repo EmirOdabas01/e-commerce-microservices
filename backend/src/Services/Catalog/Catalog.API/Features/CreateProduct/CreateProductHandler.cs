@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Catalog.API.Features.CreateProduct;
 
-public record CreateProductCommand(string Name, List<string> Category, string Description, string ImageFile, decimal Price, string SellerId)
+public record CreateProductCommand(string Name, List<string> Category, string Description, List<string> ImageFiles, decimal Price, string SellerId)
     : IRequest<CreateProductResult>;
 
 public record CreateProductResult(Guid Id);
@@ -16,7 +16,7 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
     {
         RuleFor(x => x.Name).NotEmpty().MaximumLength(150);
         RuleFor(x => x.Category).NotEmpty();
-        RuleFor(x => x.ImageFile).NotEmpty();
+        RuleFor(x => x.ImageFiles).NotEmpty();
         RuleFor(x => x.Price).GreaterThan(0);
     }
 }
@@ -38,7 +38,7 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Create
             Name = command.Name,
             Category = command.Category,
             Description = command.Description,
-            ImageFile = command.ImageFile,
+            ImageFiles = command.ImageFiles,
             Price = command.Price,
             SellerId = command.SellerId
         };

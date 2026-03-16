@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Catalog.API.Features.UpdateProduct;
 
-public record UpdateProductCommand(Guid Id, string Name, List<string> Category, string Description, string ImageFile, decimal Price, string SellerId, bool IsAdmin)
+public record UpdateProductCommand(Guid Id, string Name, List<string> Category, string Description, List<string> ImageFiles, decimal Price, string SellerId, bool IsAdmin)
     : IRequest<UpdateProductResult>;
 
 public record UpdateProductResult(bool IsSuccess);
@@ -47,7 +47,7 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, Update
         product.Name = command.Name;
         product.Category = command.Category;
         product.Description = command.Description;
-        product.ImageFile = command.ImageFile;
+        product.ImageFiles = command.ImageFiles;
         product.Price = command.Price;
 
         _session.Update(product);

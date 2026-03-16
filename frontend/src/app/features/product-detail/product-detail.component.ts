@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProductActions } from '../../store/product/product.actions';
 import { CartActions } from '../../store/cart/cart.actions';
@@ -16,7 +17,10 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
 
 @Component({
   selector: 'app-product-detail',
-  imports: [AsyncPipe, CurrencyPipe, FormsModule, MatCardModule, MatButtonModule, MatChipsModule, MatFormFieldModule, MatInputModule, LoadingSpinnerComponent],
+  imports: [
+    AsyncPipe, CurrencyPipe, FormsModule, MatCardModule, MatButtonModule,
+    MatChipsModule, MatFormFieldModule, MatInputModule, MatIconModule, LoadingSpinnerComponent
+  ],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
 })
@@ -28,10 +32,23 @@ export class ProductDetailComponent implements OnInit {
   product$ = this.store.select(selectSelectedProduct);
   loading$ = this.store.select(selectProductLoading);
   quantity = 1;
+  selectedImageIndex = 0;
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.store.dispatch(ProductActions.loadProduct({ id }));
+  }
+
+  selectImage(index: number) {
+    this.selectedImageIndex = index;
+  }
+
+  prevImage(total: number) {
+    this.selectedImageIndex = (this.selectedImageIndex - 1 + total) % total;
+  }
+
+  nextImage(total: number) {
+    this.selectedImageIndex = (this.selectedImageIndex + 1) % total;
   }
 
   addToCart(product: any) {

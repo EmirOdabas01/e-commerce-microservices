@@ -5,7 +5,7 @@ namespace Catalog.API.Features.GetProducts;
 
 public record GetProductsRequest(int? PageNumber = 1, int? PageSize = 10, decimal? MinPrice = null, decimal? MaxPrice = null, string? SortBy = null, string? SortOrder = null);
 public record GetProductsResponse(IEnumerable<ProductDto> Data, long Count, int PageIndex, int PageSize);
-public record ProductDto(Guid Id, string Name, List<string> Category, string Description, string ImageFile, decimal Price);
+public record ProductDto(Guid Id, string Name, List<string> Category, string Description, string ImageFile, List<string> ImageFiles, decimal Price);
 
 public class GetProductsEndpoint : ICarterModule
 {
