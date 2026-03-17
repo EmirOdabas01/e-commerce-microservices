@@ -3,7 +3,7 @@
 } @else if (product$ | async; as product) {
   <div class="product-detail">
     <div class="product-image">
-      @if (product.imageFiles?.length > 1) {
+      @if ((product.imageFiles?.length ?? 0) > 1) {
         <div class="image-gallery">
           <button mat-icon-button class="nav-btn prev" (click)="prevImage(product.imageFiles.length)">
             <mat-icon>chevron_left</mat-icon>

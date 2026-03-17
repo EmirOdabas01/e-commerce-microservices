@@ -41,7 +41,7 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
             _logger.LogWarning(ex, "Redis cache read failed for {CacheKey}, falling through to handler", cacheKey);
         }
 
-        var response = await next(cancellationToken);
+        var response = await next();
 
         try
         {

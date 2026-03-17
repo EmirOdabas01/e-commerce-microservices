@@ -20,8 +20,8 @@ public class AuditLoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequ
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        var userId = user?.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous";
-        var userName = user?.FindFirstValue(ClaimTypes.Name) ?? "anonymous";
+        var userId = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "anonymous";
+        var userName = user?.FindFirst(ClaimTypes.Name)?.Value ?? "anonymous";
         var isAdmin = user?.IsInRole("Admin") ?? false;
         var requestName = typeof(TRequest).Name;
 
@@ -32,7 +32,7 @@ public class AuditLoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequ
                 userId, userName, isAdmin, requestName, request);
         }
 
-        var response = await next(cancellationToken);
+        var response = await next();
 
         return response;
     }
