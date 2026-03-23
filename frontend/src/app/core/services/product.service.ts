@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Product, PaginatedResult } from '../models';
 import { environment } from '../../../environments/environment';
 
@@ -29,7 +30,9 @@ export class ProductService {
   }
 
   getProduct(id: string): Observable<Product> {
-    return this.http.get<Product>(`${this.url}/${id}`);
+    return this.http.get<{ product: Product }>(`${this.url}/${id}`).pipe(
+      map(response => response.product)
+    );
   }
 
   getProductsByCategory(category: string): Observable<Product[]> {
@@ -46,5 +49,24 @@ export class ProductService {
 
   deleteProduct(id: string): Observable<void> {
     return this.http.delete<void>(`${this.url}/${id}`);
+  }
+
+  uploadImage(file: File): Observable<{ url: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ url: string }>(`${this.url}/images`, formData);
+  }
+
+  getSellerProducts(): Observable<PaginatedResult<Product>> {
+    return this.http.get<PaginatedResult<Product>>(`${this.url}/seller`);
+  }
+
+  getSellerAnalytics(): Observable<any> {
+    return this.http.get<any>(`${this.url}/seller/analytics`);
+  }
+
+  autocomplete(query: string): Observable<string[]> {
+    const params = new HttpParams().set('query', query);
+    return this.http.get<string[]>(`${this.url}/search/autocomplete`, { params });
   }
 }

@@ -8,7 +8,14 @@
           <button mat-icon-button class="nav-btn prev" (click)="prevImage(product.imageFiles.length)">
             <mat-icon>chevron_left</mat-icon>
           </button>
-          <img [src]="product.imageFiles[selectedImageIndex]" [alt]="product.name">
+          <div class="zoom-container"
+            [style.background-image]="'url(' + product.imageFiles[selectedImageIndex] + ')'"
+            [ngStyle]="zoomStyle"
+            (mousemove)="onImageHover($event)"
+            (mouseleave)="onImageLeave()"
+            (click)="openLightbox()">
+            <img [src]="product.imageFiles[selectedImageIndex]" [alt]="product.name">
+          </div>
           <button mat-icon-button class="nav-btn next" (click)="nextImage(product.imageFiles.length)">
             <mat-icon>chevron_right</mat-icon>
           </button>
@@ -18,14 +25,46 @@
             <img [src]="img" [alt]="product.name" [class.active]="i === selectedImageIndex" (click)="selectImage(i)">
           }
         </div>
+      } @else if (product.imageFiles?.length) {
+        <div class="zoom-container"
+          [style.background-image]="'url(' + product.imageFiles[0] + ')'"
+          [ngStyle]="zoomStyle"
+          (mousemove)="onImageHover($event)"
+          (mouseleave)="onImageLeave()"
+          (click)="openLightbox()">
+          <img [src]="product.imageFiles[0]" [alt]="product.name">
+        </div>
       } @else {
-        <img [src]="product.imageFile" [alt]="product.name">
+        <div class="no-image-placeholder">
+          <mat-icon>image</mat-icon>
+          <span>No image available</span>
+        </div>
       }
     </div>
+
+    @if (lightboxOpen) {
+      <div class="lightbox-overlay" (click)="closeLightbox()" (keydown)="onLightboxKeydown($event, product.imageFiles?.length ?? 1)" tabindex="0" #lightbox>
+        <div class="lightbox-content" (click)="$event.stopPropagation()">
+          <button mat-icon-button class="lightbox-close" (click)="closeLightbox()">
+            <mat-icon>close</mat-icon>
+          </button>
+          @if ((product.imageFiles?.length ?? 0) > 1) {
+            <button mat-icon-button class="lightbox-nav prev" (click)="prevImage(product.imageFiles.length)">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+          }
+          <img [src]="(product.imageFiles?.length ?? 0) > 1 ? product.imageFiles[selectedImageIndex] : product.imageFiles[0]" [alt]="product.name">
+          @if ((product.imageFiles?.length ?? 0) > 1) {
+            <button mat-icon-button class="lightbox-nav next" (click)="nextImage(product.imageFiles.length)">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          }
+        </div>
+      </div>
+    }
     <div class="product-info">
       <h1>{{ product.name }}</h1>
       <p class="price">{{ product.price | currency }}</p>
-      <p class="description">{{ product.description }}</p>
       <p class="stock" [class.out-of-stock]="product.stock <= 0">
         @if (product.stock > 0) {
           In Stock ({{ product.stock }} available)
@@ -33,6 +72,7 @@
           Out of Stock
         }
       </p>
+      <p class="description">{{ product.description }}</p>
       <div class="categories">
         @for (cat of product.category; track cat) {
           <mat-chip>{{ cat }}</mat-chip>
